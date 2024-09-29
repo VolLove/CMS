@@ -1,4 +1,8 @@
 <?php
+
+/*
+Template Name: Parent Page
+*/
 get_header(); // Gọi file header.php
 ?>
 
@@ -11,6 +15,67 @@ get_header(); // Gọi file header.php
             <p>Learn how the school of your dreams got started.</p>
         </div>
     </div>
+</div>
+
+<div class="container container--narrow page-section">
+
+
+
+
+
+    <?php
+    $parent_id = wp_get_post_parent_id(get_the_ID());
+
+    if ($parent_id) {
+    ?>
+    <div class="metabox metabox--position-up metabox--with-home-link">
+        <p>
+            <a class="metabox__blog-home-link" href="
+            <?php
+            $page = get_page_by_path('about-us');
+            if ($page) {
+                $page_url = get_permalink($page->ID);
+                echo esc_url($page_url);
+            }
+            ?> "><i class="fa fa-home" aria-hidden="true"></i> Back to
+                About
+                Us</a> <span class="metabox__main">Our History</span>
+        </p>
+    </div>
+    <?php
+    } else {
+    ?>
+    <?php
+        // Lấy ID của trang hiện tại
+        $current_page_id = get_the_ID();
+
+        $parent_id = $current_page_id;
+
+        // Hiển thị danh sách các trang con
+        $args = array(
+            'child_of' => $parent_id, // ID của trang cha
+            'depth' => 1,              // Độ sâu để chỉ hiển thị các trang con một cấp
+            'title_li' => '',          // Không hiển thị tiêu đề
+        );
+        ?>
+    <div class="page-links">
+        <h2 class="page-links__title"><a href="
+        <?php
+        $page = get_page_by_path('about-us');
+        if ($page) {
+            $page_url = get_permalink($page->ID);
+            echo esc_url($page_url);
+        }
+        ?> "><?php the_title() ?></a></h2>
+        <ul class=" min-list">
+            <?php echo wp_list_pages($args); ?>
+        </ul>
+    </div>
+    <?php
+    }
+    ?>
+
+
     <div class="generic-content">
         <?php the_content(); ?>
     </div>
