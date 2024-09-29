@@ -16,13 +16,7 @@ get_header(); // Gọi file header.php
         </div>
     </div>
 </div>
-
 <div class="container container--narrow page-section">
-
-
-
-
-
     <?php
     $parent_id = wp_get_post_parent_id(get_the_ID());
 
@@ -46,16 +40,14 @@ get_header(); // Gọi file header.php
     } else {
     ?>
     <?php
-        // Lấy ID của trang hiện tại
         $current_page_id = get_the_ID();
 
         $parent_id = $current_page_id;
 
-        // Hiển thị danh sách các trang con
         $args = array(
-            'child_of' => $parent_id, // ID của trang cha
-            'depth' => 1,              // Độ sâu để chỉ hiển thị các trang con một cấp
-            'title_li' => '',          // Không hiển thị tiêu đề
+            'child_of' => $parent_id,
+            'depth' => 1,
+            'title_li' => '',
         );
         ?>
     <div class="page-links">
@@ -74,7 +66,6 @@ get_header(); // Gọi file header.php
     <?php
     }
     ?>
-
 
     <div class="generic-content">
         <?php the_content(); ?>
