@@ -28,3 +28,8 @@ function theme_enqueue_scripts()
     );
 }
 add_action('wp_enqueue_scripts', 'theme_enqueue_scripts');
+function custom_document_title($title)
+{
+    return '<strong>' . $title . '</strong>';
+}
+add_filter('document_title', 'custom_document_title');

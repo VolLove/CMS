@@ -1,8 +1,5 @@
 <?php
 
-/*
-Template Name: Parent Page
-*/
 get_header(); // Gọi file header.php
 ?>
 
@@ -26,14 +23,17 @@ get_header(); // Gọi file header.php
         <p>
             <a class="metabox__blog-home-link" href="
             <?php
-            $page = get_page_by_path('about-us');
-            if ($page) {
-                $page_url = get_permalink($page->ID);
-                echo esc_url($page_url);
-            }
-            ?> "><i class="fa fa-home" aria-hidden="true"></i> Back to
-                About
-                Us</a> <span class="metabox__main">Our History</span>
+
+            $page_url = get_permalink($parent_id);
+            $parent_title = get_the_title($parent_id);
+
+            echo esc_url($page_url);
+            ?> 
+            "><i class="fa fa-home" aria-hidden="true"></i> Back to
+                <?php
+                    echo esc_html($parent_title)
+                    ?>
+            </a> <span class="metabox__main"><?php the_title() ?></span>
         </p>
     </div>
     <?php
@@ -53,11 +53,8 @@ get_header(); // Gọi file header.php
     <div class="page-links">
         <h2 class="page-links__title"><a href="
         <?php
-        $page = get_page_by_path('about-us');
-        if ($page) {
-            $page_url = get_permalink($page->ID);
-            echo esc_url($page_url);
-        }
+        $page_url = get_permalink($parent_id);
+        echo esc_url($page_url);
         ?> "><?php the_title() ?></a></h2>
         <ul class=" min-list">
             <?php echo wp_list_pages($args); ?>

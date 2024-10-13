@@ -18,7 +18,9 @@
     <header class="site-header">
         <div class="container">
             <h1 class="school-logo-text float-left">
-                <a href="<?php echo esc_url(home_url('/')); ?>"><strong>Fictional</strong> University</a>
+                <a href="<?php echo esc_url(home_url('/')); ?>">
+                    <?php echo wp_get_document_title() ?><strong>
+                </a>
             </h1>
             <span class="js-search-trigger site-header__search-trigger"><i class="fa fa-search"
                     aria-hidden="true"></i></span>
@@ -29,10 +31,23 @@
                     <?php wp_nav_menu(array('theme_location' => 'primary')); ?>
                 </nav>
                 <div class="site-header__util">
-                    <a href="<?php echo site_url('/login'); ?>"
-                        class="btn btn--small btn--orange float-left push-right">Login</a>
-                    <a href="<?php echo site_url('/sign-up'); ?>"
+
+                    <?php
+                    // Kiểm tra xem người dùng đã đăng nhập hay chưa
+                    if (is_user_logged_in()) {
+                        // Hiển thị nút đăng xuất
+                    ?>
+                    <a href="<?php echo esc_url(wp_logout_url(home_url())); ?>"
                         class="btn btn--small btn--dark-orange float-left">Sign Up</a>
+                    <?php
+                    } else {
+                    ?>
+                    <a href="<?php echo esc_url(wp_login_url()); ?>"
+                        class="btn btn--small btn--orange float-left push-right">Login</a>
+                    <?php
+                    }
+                    ?>
+
                     <span class="search-trigger js-search-trigger"><i class="fa fa-search"
                             aria-hidden="true"></i></span>
                 </div>
