@@ -19,9 +19,9 @@ get_header(); // Gọi file header.php
 
     if ($parent_id) {
     ?>
-    <div class="metabox metabox--position-up metabox--with-home-link">
-        <p>
-            <a class="metabox__blog-home-link" href="
+        <div class="metabox metabox--position-up metabox--with-home-link">
+            <p>
+                <a class="metabox__blog-home-link" href="
             <?php
 
             $page_url = get_permalink($parent_id);
@@ -30,16 +30,16 @@ get_header(); // Gọi file header.php
             echo esc_url($page_url);
             ?> 
             "><i class="fa fa-home" aria-hidden="true"></i> Back to
-                <?php
+                    <?php
                     echo esc_html($parent_title)
                     ?>
-            </a> <span class="metabox__main"><?php the_title() ?></span>
-        </p>
-    </div>
+                </a> <span class="metabox__main"><?php the_title() ?></span>
+            </p>
+        </div>
     <?php
     } else {
     ?>
-    <?php
+        <?php
         $current_page_id = get_the_ID();
 
         $parent_id = $current_page_id;
@@ -50,16 +50,16 @@ get_header(); // Gọi file header.php
             'title_li' => '',
         );
         ?>
-    <div class="page-links">
-        <h2 class="page-links__title"><a href="
+        <div class="page-links">
+            <h2 class="page-links__title"><a href="
         <?php
         $page_url = get_permalink($parent_id);
         echo esc_url($page_url);
         ?> "><?php the_title() ?></a></h2>
-        <ul class=" min-list">
-            <?php echo wp_list_pages($args); ?>
-        </ul>
-    </div>
+            <ul class=" min-list">
+                <?php echo wp_list_pages($args); ?>
+            </ul>
+        </div>
     <?php
     }
     ?>

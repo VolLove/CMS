@@ -1506,3 +1506,22 @@ body.admin-bar .search-overlay {
   border-bottom: none;
   margin-bottom: 0;
 }
+.login-form-container p {
+  display: flex;
+  justify-content: space-between;
+  width: 50%;
+  color: white;
+}
+.login-form-container p input {
+  border-radius: 5px;
+  border: none;
+}
+.login-form-container p label {
+  font-weight: 400;
+}
+
+.login-form-container .login-submit input {
+  background-color: #ee964b;
+  color: white;
+  padding: 10px;
+}

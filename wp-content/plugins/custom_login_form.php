@@ -6,35 +6,20 @@ Version: 1.0
 Author: Nhóm 6
 */
 
-
-//Thêm trường mã bảo mật vào form
-function custom_login_security_code_field()
+// Thay đổi URL trang login
+function redirect_to_custom_login()
 {
-?>
-<p>
-    <label for="security_code">Mã bảo mật<br />
-        <input type="text" name="security_code" id="security_code" class="input" size="20" /></label>
-</p>
-<?php
-}
-add_action('login_form', 'custom_login_security_code_field');
+    $login_page = home_url('/login/'); // Đường dẫn đến trang login mà bạn vừa tạo
+    $page_viewed = basename($_SERVER['REQUEST_URI']);
 
-// Kiểm tra mã bảo mật khi người dùng đăng nhập
-function custom_login_security_code_check($user, $password)
-{
-    if (isset($_POST['security_code'])) {
-        $security_code = $_POST['security_code'];
-
-        // Kiểm tra mã bảo mật (ví dụ: mã phải là '1234')
-        if ($security_code !== '1234') {
-            return new WP_Error('security_code_error', 'Sai mã bảo mật!');
-        }
+    if ($page_viewed == "wp-login.php" && $_SERVER['REQUEST_METHOD'] == 'GET') {
+        wp_redirect($login_page);
+        exit;
     }
-
-    return $user;
 }
-add_filter('authenticate', 'custom_login_security_code_check', 30, 2);
+add_action('init', 'redirect_to_custom_login');
 
+// Điều hướng login
 function custom_login_redirect($redirect_to, $request, $user)
 {
     // Kiểm tra xem người dùng có vai trò là 'administrator' không
@@ -48,3 +33,11 @@ function custom_login_redirect($redirect_to, $request, $user)
     return $redirect_to;
 }
 add_filter('login_redirect', 'custom_login_redirect', 10, 3);
+
+// Thay đổi URL sau khi đăng xuất
+function custom_logout_redirect()
+{
+    wp_redirect(home_url('/login/')); // URL của trang login tùy chỉnh
+    exit();
+}
+add_action('wp_logout', 'custom_logout_redirect');
