@@ -4,3 +4,25 @@ Author: Nhóm 6
 Description: Dự án Wordpress
 Version: 1.0
 */
+.pagination {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.pagination a,
+.pagination span {
+  display: inline-block;
+  margin: 0 5px;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  text-decoration: none;
+  color: #333;
+}
+
+.pagination .current {
+  background-color: #333;
+  color: #fff;
+}
+.current-menu-item a {
+  color: #a6c76c !important;
+}
