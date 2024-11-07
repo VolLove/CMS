@@ -20,8 +20,6 @@
             <div class="header-top">
                 <div class="container">
                     <div class="header-left">
-                        <p>Special collection already available.</p><a
-                            href="<?php echo get_template_directory_uri(); ?>/#">&nbsp;Read more ...</a>
                     </div><!-- End .header-left -->
 
                     <div class="header-right">
@@ -31,38 +29,12 @@
                                 <a href="<?php echo get_template_directory_uri(); ?>/#">Links</a>
                                 <ul>
                                     <li>
-                                        <div class="header-dropdown">
-                                            <a href="<?php echo get_template_directory_uri(); ?>/#">USD</a>
-                                            <div class="header-menu">
-                                                <ul>
-                                                    <li><a href="<?php echo get_template_directory_uri(); ?>/#">Eur</a>
-                                                    </li>
-                                                    <li><a href="<?php echo get_template_directory_uri(); ?>/#">Usd</a>
-                                                    </li>
-                                                </ul>
-                                            </div><!-- End .header-menu -->
-                                        </div>
+                                        <?php if (is_user_logged_in()) : ?>
+                                        <a href="<?php echo wp_logout_url(home_url()); ?>">Sign out</a>
+                                        <?php else : ?>
+                                        <a href="<?php echo wp_login_url(home_url()); ?>">Sign in / Sign up</a>
+                                        <?php endif; ?>
                                     </li>
-                                    <li>
-                                        <div class="header-dropdown">
-                                            <a href="<?php echo get_template_directory_uri(); ?>/#">English</a>
-                                            <div class="header-menu">
-                                                <ul>
-                                                    <li><a
-                                                            href="<?php echo get_template_directory_uri(); ?>/#">English</a>
-                                                    </li>
-                                                    <li><a
-                                                            href="<?php echo get_template_directory_uri(); ?>/#">French</a>
-                                                    </li>
-                                                    <li><a
-                                                            href="<?php echo get_template_directory_uri(); ?>/#">Spanish</a>
-                                                    </li>
-                                                </ul>
-                                            </div><!-- End .header-menu -->
-                                        </div>
-                                    </li>
-                                    <li><a href="<?php echo get_template_directory_uri(); ?>/#signin-modal"
-                                            data-toggle="modal">Sign in / Sign up</a></li>
                                 </ul>
                             </li>
                         </ul><!-- End .top-menu -->

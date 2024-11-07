@@ -30,7 +30,7 @@ function create_product_post_type()
         'public' => true,
         'has_archive' => true,
         'rewrite' => array('slug' => 'san-pham'),
-        'supports' => array('title', 'editor', 'thumbnail', 'custom-fields'),
+        'supports' => array('title', 'editor', 'thumbnail', 'excerpt', 'custom-fields'),
         'menu_position' => 5,
         'menu_icon' => 'dashicons-cart',
     );
