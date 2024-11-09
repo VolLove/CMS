@@ -87,31 +87,31 @@ function display_top_10_best_selling_products_per_category()
 
     if ($categories && !is_wp_error($categories)) {
         $count = 0; ?>
-        <div class="heading heading-center mb-3">
-            <h2 class="title">Top Selling Products</h2><!-- End .title -->
+<div class="heading heading-center mb-3">
+    <h2 class="title">Top Selling Products</h2><!-- End .title -->
 
-            <ul class="nav nav-pills nav-border-anim justify-content-center" role="tablist">
-                <?php foreach ($categories as $category) {
+    <ul class="nav nav-pills nav-border-anim justify-content-center" role="tablist">
+        <?php foreach ($categories as $category) {
                     $active_class = ($count === 0) ? 'active' : ''; ?>
-                    <li class="nav-item">
-                        <a class="nav-link <?php echo $active_class ?>" id="top-<?php echo $count; ?>-link" data-toggle="tab"
-                            href="#top-<?php echo $count; ?>-tab" role="tab" aria-controls="top-<?php echo $count; ?>-tab"
-                            aria-selected="true"><?php echo esc_html($category->name); ?></a>
-                    </li>
-                <?php $count++;
+        <li class="nav-item">
+            <a class="nav-link <?php echo $active_class ?>" id="top-<?php echo $count; ?>-link" data-toggle="tab"
+                href="#top-<?php echo $count; ?>-tab" role="tab" aria-controls="top-<?php echo $count; ?>-tab"
+                aria-selected="true"><?php echo esc_html($category->name); ?></a>
+        </li>
+        <?php $count++;
                 } ?>
-            </ul>
-        </div><!-- End .heading -->
-        <div class="tab-content">
-            <div class="tab-content tab-content-carousel">
-                <?php $count = 0;
+    </ul>
+</div><!-- End .heading -->
+<div class="tab-content">
+    <div class="tab-content tab-content-carousel">
+        <?php $count = 0;
                 foreach ($categories as $category) {
                     $active_class = ($count === 0) ? 'active' : ''; ?>
-                    <div class="tab-pane p-0 fade show <?php echo $active_class ?>" id="top-<?php echo $count; ?>-tab"
-                        role="tabpanel" aria-labelledby="top-<?php echo $count; ?>-link">
-                        <div class="owl-carousel owl-simple carousel-equal-height carousel-with-shadow" data-toggle="owl"
-                            data-owl-options='{"nav": false,"dots": true,"margin": 20,"loop": false,"responsive": {"0": {"items":2},"480": {"items":2},"768": {"items":3},"992": {"items":4},"1200": {"items":5},"1600": {"items":6,"nav": true}}}'>
-                            <?php $args = array(
+        <div class="tab-pane p-0 fade show <?php echo $active_class ?>" id="top-<?php echo $count; ?>-tab"
+            role="tabpanel" aria-labelledby="top-<?php echo $count; ?>-link">
+            <div class="owl-carousel owl-simple carousel-equal-height carousel-with-shadow" data-toggle="owl"
+                data-owl-options='{"nav": false,"dots": true,"margin": 20,"loop": false,"responsive": {"0": {"items":2},"480": {"items":2},"768": {"items":3},"992": {"items":4},"1200": {"items":5},"1600": {"items":6,"nav": true}}}'>
+                <?php $args = array(
                                 // Truy vấn 10 sản phẩm bán chạy nhất trong loại sản phẩm này
                                 'post_type' => 'product',
                                 'posts_per_page' => 10, // Thay bằng meta key phù hợp
@@ -127,57 +127,195 @@ function display_top_10_best_selling_products_per_category()
                             );
                             $query = new WP_Query($args);
                             if ($query->have_posts()) { ?>
-                                <?php while ($query->have_posts()) {
-                                    $query->the_post(); ?>
-                                    <div class="product product-11 text-center">
-                                        <figure class="product-media">
-                                            <a href="<?php echo get_permalink() ?>">
-                                                <?php if (has_post_thumbnail()) {
+                <?php while ($query->have_posts()) {
+                                    $query->the_post();
+                                    $product_price = (int)get_post_meta(get_the_ID(), '_product_price', true);
+                                ?>
+                <div class="product product-11 text-center">
+                    <figure class="product-media">
+                        <a href="<?php echo get_permalink() ?>">
+                            <?php if (has_post_thumbnail()) {
                                                     the_post_thumbnail('thumbnail');
                                                 } ?>
-                                            </a>
+                        </a>
 
-                                            <div class="product-action-vertical">
-                                                <a href="#" class="btn-product-icon btn-wishlist"><span>add to
-                                                        wishlist</span></a>
-                                            </div><!-- End .product-action-vertical -->
-                                        </figure><!-- End .product-media -->
+                        <div class="product-action-vertical">
+                            <a href="#" class="btn-product-icon btn-wishlist"><span>add to
+                                    wishlist</span></a>
+                        </div><!-- End .product-action-vertical -->
+                    </figure><!-- End .product-media -->
 
-                                        <div class="product-body">
-                                            <div class="product-cat">
-                                                <a href="#"><?php echo esc_html($category->name); ?></a>
-                                            </div>
-                                            <h3 class="product-title"><a href="<?php echo get_permalink() ?>"><?php the_title(); ?>r</a>
-                                            </h3>
-                                            <!-- End .product-title -->
-                                            <div class="product-price">
-                                                <?php $product_price = get_post_meta(get_the_ID(), '_product_price', true);
-                                                if ($product_price) {
-                                                    echo  number_format($product_price, 0, ',', '.') . ' VNĐ';
-                                                } ?>
-                                            </div><!-- End .product-price -->
-                                        </div><!-- End .product-body -->
-                                        <div class="product-action">
-                                            <a href="#" class="btn-product btn-cart"><span>add to cart</span></a>
-                                        </div><!-- End .product-action -->
-                                    </div><!-- End .product -->
+                    <div class="product-body">
+                        <div class="product-cat">
+                            <a href="#"><?php echo esc_html($category->name); ?></a>
+                        </div>
+                        <h3 class="product-title"><a href="<?php echo get_permalink() ?>"><?php the_title(); ?>r</a>
+                        </h3>
+                        <!-- End .product-title -->
+                        <div class="product-price">
+                            <?php echo number_format($product_price, 0, ',', '.') . ' VNĐ'; ?>
+                        </div><!-- End .product-price -->
+                    </div><!-- End .product-body -->
+                    <div class="product-action">
+                        <button class="add-to-cart-btn btn-product btn-cart "
+                            data-product-id="<?php echo get_the_ID() ?>" data-quantity="1">
+                            <span>add to cart</span></button>
 
-                                <?php } ?>
+                    </div><!-- End .product-action -->
+                </div><!-- End .product -->
 
-                            <?php       } else {
+                <?php } ?>
+                <?php       } else {
                                 echo $count;
                             }
                             // Reset lại truy vấn
                             wp_reset_postdata(); ?>
-                        </div><!-- End .owl-carousel -->
-                    </div><!-- .End .tab-pane -->
-                <?php
+            </div><!-- End .owl-carousel -->
+        </div><!-- .End .tab-pane -->
+        <?php
                     $count++;
                 } ?>
 
-            </div><!-- End .tab-content -->
-        </div><!-- End .tab-content -->
+    </div><!-- End .tab-content -->
+</div><!-- End .tab-content -->
 <?php } else {
         echo '<p>Không có loại sản phẩm nào.</p>';
     }
 }
+// Hiển thị giỏ hàng
+function sc_display_cart()
+{ ?>
+
+<a class="dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+    data-display="static">
+    <div class="icon">
+        <i class="icon-shopping-cart"></i>
+        <span class="cart-count"><?php echo coutnCart() ?></span>
+    </div>
+    <p>Cart</p>
+</a>
+
+<?php if (empty($_SESSION['cart'])) { ?>
+
+<div class="dropdown-menu dropdown-menu-right ">
+    <div class="dropdown-cart-products">
+        <?php echo "<p>Giỏ hàng trống.</p>"; ?>
+    </div><!-- End .dropdown-cart-total -->
+</div><!-- End .dropdown-menu -->
+<?php } else { ?>
+<div class="dropdown-menu dropdown-menu-right ">
+    <div class="dropdown-cart-products">
+        <?php $total = 0;
+                foreach ($_SESSION['cart'] as $product_id => $quantity) {
+                    $product = get_post($product_id);
+                    if ($product) {
+                        $product_price = (int)get_post_meta($product_id, '_product_price', true);
+                        $total += $product_price * $quantity;
+                        // Lấy ID ảnh đại diện của sản phẩm
+                        $thumbnail_id = get_post_thumbnail_id($product_id);
+                        // Lấy URL của ảnh đại diện
+                        $image_url = wp_get_attachment_image_url($thumbnail_id, 'full');
+                ?>
+        <div class="product">
+            <div class="product-cart-details">
+                <h4 class="product-title">
+                    <a href="product.html"><?php echo $product->post_title ?></a>
+                </h4>
+                <span class="cart-product-info">
+                    <span class="cart-product-qty"><?php echo $quantity ?></span>
+                    x <?php echo number_format($product_price, 0, ',', '.'); ?> VND
+                </span>
+            </div><!-- End .product-cart-details -->
+
+            <figure class="product-image-container">
+                <a href="product.html" class="product-image">
+                    <img src="<?php echo $image_url ?>" alt="product">
+                </a>
+            </figure>
+            <button href="#" class="remove-from-cart-btn btn-remove" data-product-id="<?php echo $product_id ?>"
+                title="Remove Product">
+                <i class="icon-close"></i></button>
+        </div>
+        <?php } else {
+                        unset($_SESSION['cart'][$product_id]);
+                    }
+                } ?>
+    </div><!-- End .cart-product -->
+
+    <div class="dropdown-cart-total">
+        <span>Total</span>
+
+        <span class="cart-total-price"><?php echo  number_format($total, 0, ',', '.') ?> VND</span>
+    </div><!-- End .dropdown-cart-total -->
+
+    <div class="dropdown-cart-action">
+        <?php
+                $page_cart = get_page_by_path('gio-hang');
+                if ($page_cart) {
+                    $page_cart_url = get_permalink($page_cart->ID);
+                } else {
+                    $page_cart_url = "";
+                } ?>
+        <a href="<?php echo $page_cart_url; ?>" class="btn btn-primary">View Cart</a>
+        <a href="<?php echo get_template_directory_uri(); ?>/checkout"
+            class="btn btn-outline-primary-2"><span>Checkout</span><i class="icon-long-arrow-right"></i></a>
+    </div><!-- End .dropdown-cart-total -->
+</div><!-- End .dropdown-menu -->
+<?php }
+} // Shortcode để hiển thị giỏ hàng
+function coutnCart()
+{
+    if (empty($_SESSION['cart'])) {
+        return 0;
+    } else {
+        $totalcount = 0;
+        foreach ($_SESSION['cart'] as $value) {
+            $totalcount += 1;
+        }
+        return $totalcount;
+    }
+} // Tự động tạo trang giỏ hàng khi kích hoạt plugin
+function theme_create_cart_page()
+{
+    // Kiểm tra xem trang giỏ hàng đã tồn tại chưa
+    $cart_page = get_page_by_path('gio-hang');
+
+    // Nếu trang chưa tồn tại, tạo trang mới
+    if (!$cart_page) {
+        $new_page = array(
+            'post_title'    => 'Giỏ hàng',
+            'page_template' => 'page-cart.php',
+            'post_status'   => 'publish',
+            'post_type'     => 'page',
+            'post_name'     => 'gio-hang'
+        );
+
+        // Tạo trang mới
+        wp_insert_post($new_page);
+    }
+}
+// Gọi hàm tạo trang khi theme được kích hoạt
+add_action('after_switch_theme', 'theme_create_cart_page');
+// Hàm tạo trang thanh toán khi theme được kích hoạt
+function theme_create_checkout_page()
+{
+    // Kiểm tra xem trang thanh toán đã tồn tại chưa (dùng slug)
+    $checkout_page = get_page_by_path('thanh-toan');
+
+    // Nếu trang chưa tồn tại, tạo trang mới
+    if (!$checkout_page) {
+        $new_page_id = wp_insert_post(array(
+            'post_title'    => 'Thanh toán',
+            'page_template' => 'check-out.php',
+            'post_status'   => 'publish',
+            'post_type'     => 'page',
+            'post_name'     => 'thanh-toan'
+        ));
+
+        // Tạo trang mới
+        wp_insert_post($new_page_id);
+    }
+}
+
+// Gọi hàm tạo trang thanh toán khi theme được kích hoạt
+add_action('after_switch_theme', 'theme_create_checkout_page');
