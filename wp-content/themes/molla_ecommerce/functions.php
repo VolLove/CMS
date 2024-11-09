@@ -257,8 +257,15 @@ function sc_display_cart()
                     $page_cart_url = "";
                 } ?>
         <a href="<?php echo $page_cart_url; ?>" class="btn btn-primary">View Cart</a>
-        <a href="<?php echo get_template_directory_uri(); ?>/checkout"
-            class="btn btn-outline-primary-2"><span>Checkout</span><i class="icon-long-arrow-right"></i></a>
+        <?php
+                $page_checkout = get_page_by_path('thanh-toan');
+                if ($page_checkout) {
+                    $page_checkout_url = get_permalink($page_checkout->ID);
+                } else {
+                    $page_checkout_url = "";
+                } ?>
+        <a href="<?php echo $page_checkout_url ?>" class="btn btn-outline-primary-2"><span>Checkout</span><i
+                class="icon-long-arrow-right"></i></a>
     </div><!-- End .dropdown-cart-total -->
 </div><!-- End .dropdown-menu -->
 <?php }
