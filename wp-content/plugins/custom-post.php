@@ -77,6 +77,34 @@ function save_product_price_meta_box($post_id)
 }
 add_action('save_post', 'save_product_price_meta_box');
 
+//Giảm giá sản phẩm
+function add_discount_meta_box()
+{
+    add_meta_box(
+        'product_discount',
+        'Giảm Giá Sản Phẩm',
+        'display_discount_meta_box',
+        'product', // Thay 'product' bằng post type sản phẩm của bạn
+        'side',
+        'high'
+    );
+}
+add_action('add_meta_boxes', 'add_discount_meta_box');
+
+function display_discount_meta_box($post)
+{
+    $discount = get_post_meta($post->ID, '_product_discount', true);
+    echo '<label for="product_discount">Giảm giá (%):</label>';
+    echo '<input type="number" name="product_discount" value="' . esc_attr($discount) . '" min="0" max="100" step="1">';
+}
+
+function save_product_discount($post_id)
+{
+    if (isset($_POST['product_discount'])) {
+        update_post_meta($post_id, '_product_discount', sanitize_text_field($_POST['product_discount']));
+    }
+}
+add_action('save_post', 'save_product_discount');
 
 //Loại sản phẩm
 function create_product_taxonomy()
@@ -155,7 +183,7 @@ function update_product_category_image_field($term_id)
     }
 }
 add_action('edited_product_category', 'update_product_category_image_field');
-
+//Giỏ hàng
 // Khởi tạo session để lưu giỏ hàng
 function sc_start_session()
 {
@@ -231,6 +259,9 @@ function sc_cart_scripts()
 }
 add_action('wp_enqueue_scripts', 'sc_cart_scripts'); // Shortcode để hiển thị giỏ hàng
 
+
+//ĐƠN HÀNG
+//Tạo bảng đơn hàng
 function create_orders_table()
 {
     global $wpdb;
@@ -254,6 +285,49 @@ function create_orders_table()
     dbDelta($sql);
 }
 register_activation_hook(__FILE__, 'create_orders_table');
+//Thêm thông tin liên hệ
+// Thêm trường điện thoại và địa chỉ vào hồ sơ người dùng
+function add_custom_user_profile_fields($user)
+{
+?>
+<h3>Thông tin liên hệ</h3>
+<table class="form-table">
+    <tr>
+        <th><label for="phone">Số điện thoại</label></th>
+        <td>
+            <input type="text" name="phone" id="phone"
+                value="<?php echo esc_attr(get_user_meta($user->ID, 'phone', true)); ?>" class="regular-text" /><br>
+            <span class="description">Nhập số điện thoại của bạn.</span>
+        </td>
+    </tr>
+    <tr>
+        <th><label for="address">Địa chỉ</label></th>
+        <td>
+            <textarea name="address" id="address" rows="5"
+                class="regular-text"><?php echo esc_textarea(get_user_meta($user->ID, 'address', true)); ?></textarea><br>
+            <span class="description">Nhập địa chỉ của bạn.</span>
+        </td>
+    </tr>
+</table>
+<?php
+}
+add_action('show_user_profile', 'add_custom_user_profile_fields');
+add_action('edit_user_profile', 'add_custom_user_profile_fields');
+
+// Lưu số điện thoại và địa chỉ vào cơ sở dữ liệu khi cập nhật hồ sơ
+function save_custom_user_profile_fields($user_id)
+{
+    if (!current_user_can('edit_user', $user_id)) {
+        return false;
+    }
+
+    update_user_meta($user_id, 'phone', sanitize_text_field($_POST['phone']));
+    update_user_meta($user_id, 'address', sanitize_textarea_field($_POST['address']));
+}
+add_action('personal_options_update', 'save_custom_user_profile_fields');
+add_action('edit_user_profile_update', 'save_custom_user_profile_fields');
+
+//Đăng ký menu đơn hàng
 function register_orders_menu()
 {
     add_menu_page(
@@ -388,41 +462,86 @@ function checkout_page_shortcode()
     if (!is_user_logged_in()) {
         return '<p>Vui lòng <a href="' . wp_login_url(get_permalink()) . '">đăng nhập</a> để tiếp tục.</p>';
     }
+    $products = $_SESSION['cart'];
     if (empty($products)) {
         echo '<p>Giỏ hàng của bạn đang trống.</p>';
         return;
     }
-
-
     // Lấy thông tin người dùng hiện tại
     $current_user = wp_get_current_user();
     $user_name = $current_user->display_name;
     $user_email = $current_user->user_email;
     $user_phone = get_user_meta($current_user->ID, 'phone', true);
     $user_address = get_user_meta($current_user->ID, 'address', true);
-
     ob_start();
 ?>
-<h2>Thông tin thanh toán</h2>
 <form id="checkout-form" method="POST">
-    <p>
-        <label>Tên khách hàng:</label>
-        <input type="text" name="customer_name" value="<?php echo esc_attr($user_name); ?>" readonly>
-    </p>
-    <p>
-        <label>Email:</label>
-        <input type="email" name="customer_email" value="<?php echo esc_attr($user_email); ?>" readonly>
-    </p>
-    <p>
-        <label>Số điện thoại:</label>
-        <input type="text" name="customer_phone" value="<?php echo esc_attr($user_phone); ?>" required>
-    </p>
-    <p>
-        <label>Địa chỉ:</label>
-        <textarea name="customer_address" required><?php echo esc_textarea($user_address); ?></textarea>
-    </p>
+    <div class="row">
+        <div class="col-lg-7">
+            <h2 class="checkout-title">Thông tin thanh toán</h2>
+            <p>
+                <label for="customer_name" class="sr-only">Tên khách hàng:</label>
+                <input class="form-control" type="text" placeholder="Tên khách hàng" id="customer_name"
+                    name="customer_name" required value="<?php echo esc_attr($user_name); ?>">
+            </p>
+            <p>
+                <label for="customer_email" class="sr-only">Email:</label>
+                <input id="customer_email" class="form-control" type="email" placeholder="Email" name="customer_email"
+                    value="<?php echo esc_attr($user_email); ?>" required>
+            </p>
+            <p>
+                <label for="customer_phone" class="sr-only">Số điện thoại:</label>
+                <input id="customer_phone" class="form-control" type="text" placeholder="Số điện thoại"
+                    name="customer_phone" value="<?php echo esc_attr($user_phone); ?>" required>
+            </p>
+            <p>
+                <label for="customer_address" class="sr-only">Địa chỉ:</label>
+                <textarea class="form-control" placeholder="Địa chỉ" id="customer_address" name="customer_address"
+                    required><?php echo esc_textarea($user_address); ?></textarea>
+            </p>
+        </div>
+        <aside class="col-lg-5">
+            <div class="summary">
+                <h3 class="summary-title">Your Order</h3><!-- End .summary-title -->
 
-    <button type="submit" name="checkout_submit">Xác nhận thanh toán</button>
+                <table class="table table-summary">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <tr>
+                            <td><a href="#">Beige knitted elastic runner shoes</a></td>
+                            <td>$84.00</td>
+                        </tr>
+
+                        <tr>
+                            <td><a href="#">Blue utility pinafore denimdress</a></td>
+                            <td>$76,00</td>
+                        </tr>
+                        <tr class="summary-subtotal">
+                            <td>Subtotal:</td>
+                            <td>$160.00</td>
+                        </tr><!-- End .summary-subtotal -->
+                        <tr>
+                            <td>Shipping:</td>
+                            <td>Free shipping</td>
+                        </tr>
+                        <tr class="summary-total">
+                            <td>Total:</td>
+                            <td>$160.00</td>
+                        </tr><!-- End .summary-total -->
+                    </tbody>
+                </table><!-- End .table table-summary -->
+                <button type="submit" name="checkout_submit" class="btn btn-outline-primary-2 btn-order btn-block">
+                    Xác nhận thanh toán
+                </button>
+            </div><!-- End .summary -->
+        </aside>
+    </div>
 </form>
 <?php
     return ob_get_clean();

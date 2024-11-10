@@ -1,4 +1,57 @@
 <?php
+function theme_create_cart_page()
+{
+    // Kiểm tra xem trang giỏ hàng đã tồn tại chưa
+    $cart_page = get_page_by_path('gio-hang');
+
+    // Nếu trang chưa tồn tại, tạo trang mới
+    if (!$cart_page) {
+        $new_page = array(
+            'post_title'    => 'Giỏ hàng',
+            'page_template' => 'page-cart.php',
+            'post_status'   => 'publish',
+            'post_type'     => 'page',
+            'post_name'     => 'gio-hang'
+        );
+
+        // Tạo trang mới
+        wp_insert_post($new_page);
+    }
+    // Kiểm tra xem trang thanh toán đã tồn tại chưa (dùng slug)
+    $checkout_page = get_page_by_path('thanh-toan');
+
+    // Nếu trang chưa tồn tại, tạo trang mới
+    if (!$checkout_page) {
+        $new_page_id = wp_insert_post(array(
+            'post_title'    => 'Thanh toán',
+            'page_template' => 'page-check-out.php',
+            'post_status'   => 'publish',
+            'post_type'     => 'page',
+            'post_name'     => 'thanh-toan'
+        ));
+
+        // Tạo trang mới
+        wp_insert_post($new_page_id);
+    }
+    // Kiểm tra xem trang login đã tồn tại chưa (dùng slug)
+    $login_page = get_page_by_path('login');
+
+    // Nếu trang chưa tồn tại, tạo trang mới
+    if (!$login_page) {
+        $new_page_id = wp_insert_post(array(
+            'post_title'    => 'Login',
+            'page_template' => 'login.php',
+            'post_status'   => 'publish',
+            'post_type'     => 'page',
+            'post_name'     => 'login'
+        ));
+
+        // Tạo trang mới
+        wp_insert_post($new_page_id);
+    }
+}
+// Gọi hàm tạo trang khi theme được kích hoạt
+add_action('after_switch_theme', 'theme_create_cart_page');
 // Đăng ký menu tùy chỉnh
 function register_custom_menus()
 {
@@ -85,7 +138,6 @@ function display_top_10_best_selling_products_per_category()
     $categories = get_terms(array(
         'taxonomy' => 'product_category',
         'hide_empty' => true, // Chỉ lấy các loại có sản phẩm
-        'number' => 3, // Chỉ lấy 3 loại sản phẩm
     ));
 
     if ($categories && !is_wp_error($categories)) {
@@ -284,41 +336,4 @@ function coutnCart()
         }
         return $totalcount;
     }
-} // Tự động tạo trang giỏ hàng khi kích hoạt plugin
-function theme_create_cart_page()
-{
-    // Kiểm tra xem trang giỏ hàng đã tồn tại chưa
-    $cart_page = get_page_by_path('gio-hang');
-
-    // Nếu trang chưa tồn tại, tạo trang mới
-    if (!$cart_page) {
-        $new_page = array(
-            'post_title'    => 'Giỏ hàng',
-            'page_template' => 'page-cart.php',
-            'post_status'   => 'publish',
-            'post_type'     => 'page',
-            'post_name'     => 'gio-hang'
-        );
-
-        // Tạo trang mới
-        wp_insert_post($new_page);
-    }
-    // Kiểm tra xem trang thanh toán đã tồn tại chưa (dùng slug)
-    $checkout_page = get_page_by_path('thanh-toan');
-
-    // Nếu trang chưa tồn tại, tạo trang mới
-    if (!$checkout_page) {
-        $new_page_id = wp_insert_post(array(
-            'post_title'    => 'Thanh toán',
-            'page_template' => 'page-check-out.php',
-            'post_status'   => 'publish',
-            'post_type'     => 'page',
-            'post_name'     => 'thanh-toan'
-        ));
-
-        // Tạo trang mới
-        wp_insert_post($new_page_id);
-    }
-}
-// Gọi hàm tạo trang khi theme được kích hoạt
-add_action('after_switch_theme', 'theme_create_cart_page');
+} // Tự động tạo trang khi kích hoạt plugin
