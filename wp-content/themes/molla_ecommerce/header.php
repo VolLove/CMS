@@ -51,7 +51,7 @@
                             <i class="icon-bars"></i>
                         </button>
 
-                        <a href="<?php echo get_template_directory_uri(); ?>/index.html" class="logo">
+                        <a href="<?php echo home_url(); ?>" class="logo">
                             <img src="<?php echo get_template_directory_uri(); ?>/assets/images/demos/demo-2/logo.png"
                                 alt="Molla Logo" width="105" height="25">
                         </a>

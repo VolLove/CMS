@@ -6,6 +6,9 @@ function register_custom_menus()
         'header-menu' => __('Header Menu', 'text-domain'),
         'footer-menu' => __('Footer Menu', 'text-domain'),
         'browse-categories' => __('Browse Categories', 'text-domain'),
+        'footer-menu-information' => __('Footer Menu Information', 'text-domain'),
+        'footer-menu-service' => __('Footer Menu Service', 'text-domain'),
+        'footer-menu-account' => __('Footer Menu Account', 'text-domain'),
     ));
 }
 add_action('after_setup_theme', 'register_custom_menus');
@@ -300,12 +303,6 @@ function theme_create_cart_page()
         // Tạo trang mới
         wp_insert_post($new_page);
     }
-}
-// Gọi hàm tạo trang khi theme được kích hoạt
-add_action('after_switch_theme', 'theme_create_cart_page');
-// Hàm tạo trang thanh toán khi theme được kích hoạt
-function theme_create_checkout_page()
-{
     // Kiểm tra xem trang thanh toán đã tồn tại chưa (dùng slug)
     $checkout_page = get_page_by_path('thanh-toan');
 
@@ -313,7 +310,7 @@ function theme_create_checkout_page()
     if (!$checkout_page) {
         $new_page_id = wp_insert_post(array(
             'post_title'    => 'Thanh toán',
-            'page_template' => 'check-out.php',
+            'page_template' => 'page-check-out.php',
             'post_status'   => 'publish',
             'post_type'     => 'page',
             'post_name'     => 'thanh-toan'
@@ -323,6 +320,5 @@ function theme_create_checkout_page()
         wp_insert_post($new_page_id);
     }
 }
-
-// Gọi hàm tạo trang thanh toán khi theme được kích hoạt
-add_action('after_switch_theme', 'theme_create_checkout_page');
+// Gọi hàm tạo trang khi theme được kích hoạt
+add_action('after_switch_theme', 'theme_create_cart_page');
