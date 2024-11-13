@@ -24,5 +24,10 @@ Version: 1.0
   color: #fff;
 }
 .current-menu-item a {
-  color: #a6c76c !important;
+  color: #c96 !important;
+}
+.btn-check {
+  position: absolute;
+  clip: rect(0, 0, 0, 0);
+  pointer-events: none;
 }

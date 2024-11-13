@@ -1056,9 +1056,6 @@ a:focus {
 .btn-product-gallery:focus {
   background-color: #a6c76c;
 }
-.product-gallery-item:before {
-  border-color: #a6c76c;
-}
 .product-pager-link:hover,
 .product-pager-link:focus {
   color: #a6c76c;

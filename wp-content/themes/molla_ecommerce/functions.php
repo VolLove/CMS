@@ -88,7 +88,6 @@ function my_custom_theme_enqueue_styles()
     wp_enqueue_style('magnific-popup', $theme_directory . '/assets/css/plugins/magnific-popup/magnific-popup.css');
     wp_enqueue_style('jquery-countdown', $theme_directory . '/assets/css/plugins/jquery.countdown.css');
     wp_enqueue_style('style', $theme_directory . '/assets/css/style.css');
-    wp_enqueue_style('skin-demo', $theme_directory . '/assets/css/skins/skin-demo-2.css');
     wp_enqueue_style('demo', $theme_directory . '/assets/css/demos/demo-2.css');
     wp_enqueue_style('main-style', $theme_directory . '/style.css');
 }
@@ -118,6 +117,7 @@ function my_custom_theme_enqueue_scripts()
     wp_enqueue_script('waypoints', $theme_directory . '/assets/js/jquery.waypoints.min.js', array('jquery'), null, true);
     wp_enqueue_script('superfish', $theme_directory . '/assets/js/superfish.min.js', array('jquery'), null, true);
     wp_enqueue_script('owl-carousel', $theme_directory . '/assets/js/owl.carousel.min.js', array('jquery'), null, true);
+    wp_enqueue_script('input-spinner', $theme_directory . '/assets/js/bootstrap-input-spinner.js', array('jquery'), null, true);
     wp_enqueue_script('plugin', $theme_directory . '/assets/js/jquery.plugin.min.js', array('jquery'), null, true);
     wp_enqueue_script(
         'magnific-popup',
@@ -144,7 +144,6 @@ function display_top_10_best_selling_products_per_category()
         $count = 0; ?>
 <div class="heading heading-center mb-3">
     <h2 class="title">Top Selling Products</h2><!-- End .title -->
-
     <ul class="nav nav-pills nav-border-anim justify-content-center" role="tablist">
         <?php foreach ($categories as $category) {
                     $active_class = ($count === 0) ? 'active' : ''; ?>
@@ -211,12 +210,6 @@ function display_top_10_best_selling_products_per_category()
                             <?php echo number_format($product_price, 0, ',', '.') . ' VNĐ'; ?>
                         </div><!-- End .product-price -->
                     </div><!-- End .product-body -->
-                    <div class="product-action">
-                        <button class="add-to-cart-btn btn-product btn-cart "
-                            data-product-id="<?php echo get_the_ID() ?>" data-quantity="1">
-                            <span>add to cart</span></button>
-
-                    </div><!-- End .product-action -->
                 </div><!-- End .product -->
 
                 <?php } ?>
@@ -238,7 +231,7 @@ function display_top_10_best_selling_products_per_category()
     }
 }
 // Hiển thị giỏ hàng
-function sc_display_cart()
+function display_cart()
 { ?>
 
 <a class="dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
@@ -261,37 +254,55 @@ function sc_display_cart()
 <div class="dropdown-menu dropdown-menu-right ">
     <div class="dropdown-cart-products">
         <?php $total = 0;
-                foreach ($_SESSION['cart'] as $product_id => $quantity) {
+                foreach ($_SESSION['cart'] as $product_id => $product_info) {
                     $product = get_post($product_id);
                     if ($product) {
-                        $product_price = (int)get_post_meta($product_id, '_product_price', true);
-                        $total += $product_price * $quantity;
-                        // Lấy ID ảnh đại diện của sản phẩm
-                        $thumbnail_id = get_post_thumbnail_id($product_id);
-                        // Lấy URL của ảnh đại diện
-                        $image_url = wp_get_attachment_image_url($thumbnail_id, 'full');
+                        // Hiển thị thông tin size và color
+                        if (isset($product_info['options'])) {
+                            foreach ($product_info['options'] as $size => $colors) {
+
+                                foreach ($colors as $color => $quantity) {
+                                    $product_price = (int)get_post_meta($product_id, '_product_price', true);
+                                    $product_colors = get_post_meta($product_id, '_product_colors', true);
+                                    $product_size = get_term($size, 'size');
+
+                                    $total += $product_price * $quantity;
                 ?>
         <div class="product">
             <div class="product-cart-details">
                 <h4 class="product-title">
-                    <a href="product.html"><?php echo $product->post_title ?></a>
+                    <a href="<?php echo get_permalink($product_id) ?> "><?php echo $product->post_title ?></a>
                 </h4>
                 <span class="cart-product-info">
                     <span class="cart-product-qty"><?php echo $quantity ?></span>
                     x <?php echo number_format($product_price, 0, ',', '.'); ?> VND
-                </span>
+                </span><br>
+                <?php if (isset($product_colors[$color])) {
+                                                $image_id = $product_colors[$color]; // Lấy ID ảnh của màu
+                                                $image_url = wp_get_attachment_url($image_id); // Lấy URL của ảnh
+                                            ?>
+                <span class="cart-product-info">Màu: <?php echo $color ?></span>
+                <?php } ?>
+                <br>
+                <?php if (isset($product_size->name)) { ?>
+                <span class="cart-product-info">Size: <?php echo $product_size->name ?></span>
+                <?php } ?>
             </div><!-- End .product-cart-details -->
 
             <figure class="product-image-container">
-                <a href="product.html" class="product-image">
+                <a href="<?php echo get_permalink($product_id) ?> " class="product-image">
                     <img src="<?php echo $image_url ?>" alt="product">
                 </a>
             </figure>
-            <button href="#" class="remove-from-cart-btn btn-remove" data-product-id="<?php echo $product_id ?>"
-                title="Remove Product">
+            <button href="#" class="remove-from-cart-btn btn-remove" data-size="<?php echo $size; ?>"
+                data-color="<?php echo $color; ?>" data-product-id="<?php echo $product_id ?>" title="Remove Product">
                 <i class="icon-close"></i></button>
         </div>
-        <?php } else {
+        <?php
+                                }
+                            }
+                        }
+                    } else {
                         unset($_SESSION['cart'][$product_id]);
                     }
                 } ?>
@@ -331,9 +342,15 @@ function coutnCart()
         return 0;
     } else {
         $totalcount = 0;
-        foreach ($_SESSION['cart'] as $value) {
-            $totalcount += 1;
+        foreach ($_SESSION['cart'] as $product_info) {
+            if (isset($product_info['options'])) {
+                foreach ($product_info['options'] as $size => $colors) {
+                    foreach ($colors as $color => $quantity) {
+                        $totalcount += 1;
+                    }
+                }
+            }
+            return $totalcount;
         }
-        return $totalcount;
     }
 } // Tự động tạo trang khi kích hoạt plugin

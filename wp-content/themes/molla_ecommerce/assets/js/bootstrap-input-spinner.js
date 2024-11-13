@@ -49,7 +49,7 @@
       config.decrementButton +
       "</button>" +
       "</div>" +
-      '<input type="text" style="text-align: ' +
+      '<input  type="text" style="text-align: ' +
       config.textAlign +
       '" class="form-control"/>' +
       '<div class="input-group-append">' +

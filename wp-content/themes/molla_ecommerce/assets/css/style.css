@@ -7541,9 +7541,6 @@ p {
 .product.product-11 .old-price {
   text-decoration: none;
 }
-.product.product-11 .product-body {
-  padding-bottom: 7rem;
-}
 .product.product-11 .product-action {
   bottom: 2rem;
 }
@@ -10471,8 +10468,6 @@ button:focus {
   background-color: #c96;
 }
 .product-image-gallery {
-  display: flex;
-  flex-flow: row wrap;
   margin-left: -0.5rem;
   margin-right: -0.5rem;
 }
@@ -10502,7 +10497,7 @@ button:focus {
   right: 0.5rem;
   top: 0;
   bottom: 0;
-  transition: all 0.35s ease;
+  transition: all 0s ease;
 }
 .product-gallery-item:before {
   opacity: 0;

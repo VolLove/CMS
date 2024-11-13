@@ -1,24 +1,27 @@
-<?php get_header(); ?>
+<?php get_header();
+unset($_SESSION['cart']);
+
+if (have_posts()) :
+    while (have_posts()) : the_post();
+        $product_price = (int)get_post_meta(get_the_ID(), '_product_price', true);
+        $product_colors = get_post_meta(get_the_ID(), '_product_colors', true);
+        $discount = get_post_meta(get_the_ID(), '_product_discount', true);
+        // Lấy URL của ảnh thumbnail của bài đăng hiện tại
+        $thumbnail_url = get_the_post_thumbnail_url(get_the_ID(), 'full');
+        $product_categories = get_the_terms(get_the_ID(), 'product_category');
+        // Kiểm tra và hiển thị đường dẫn nếu tồn tại ảnh thumbnail
+        if (!$thumbnail_url) {
+            $thumbnail_url = "error";
+        }
+?>
+
 <main class="main">
     <nav aria-label="breadcrumb" class="breadcrumb-nav border-0 mb-0">
         <div class="container d-flex align-items-center">
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="index.html">Home</a></li>
-                <li class="breadcrumb-item"><a href="#">Products</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Default</li>
+                <li class="breadcrumb-item"><a href="<?php echo home_url() ?>">Home</a></li>
+                <li class="breadcrumb-item active" aria-current="page"><?php the_title(); ?></li>
             </ol>
-
-            <nav class="product-pager ml-auto" aria-label="Product">
-                <a class="product-pager-link product-pager-prev" href="#" aria-label="Previous" tabindex="-1">
-                    <i class="icon-angle-left"></i>
-                    <span>Prev</span>
-                </a>
-
-                <a class="product-pager-link product-pager-next" href="#" aria-label="Next" tabindex="-1">
-                    <span>Next</span>
-                    <i class="icon-angle-right"></i>
-                </a>
-            </nav><!-- End .pager-nav -->
         </div><!-- End .container -->
     </nav><!-- End .breadcrumb-nav -->
 
@@ -30,123 +33,159 @@
                         <div class="product-gallery product-gallery-vertical">
                             <div class="row">
                                 <figure class="product-main-image">
-                                    <img id="product-zoom" src="assets/images/products/single/1.jpg"
-                                        data-zoom-image="assets/images/products/single/1-big.jpg" alt="product image">
-
-                                    <a href="#" id="btn-product-gallery" class="btn-product-gallery">
-                                        <i class="icon-arrows"></i>
-                                    </a>
+                                    <?php if (!empty($discount)) { ?>
+                                    <span class="product-label label-sale">Discount <?php echo $discount ?>%</span>
+                                    <?php } ?>
+                                    <img id="product-zoom" src="<?php echo $thumbnail_url ?>"
+                                        alt="<?php the_title(); ?>">
                                 </figure><!-- End .product-main-image -->
 
                                 <div id="product-zoom-gallery" class="product-image-gallery">
-                                    <a class="product-gallery-item active" href="#"
-                                        data-image="assets/images/products/single/1.jpg"
-                                        data-zoom-image="assets/images/products/single/1-big.jpg">
-                                        <img src="assets/images/products/single/1-small.jpg" alt="product side">
+                                    <a class="product-gallery-item active">
+                                        <img src="<?php echo $thumbnail_url ?>" class="product-image"
+                                            alt="<?php the_title(); ?>">
                                     </a>
+                                    <?php
+                                            $product_images = get_post_meta(get_the_ID(), '_product_images', true);
+                                            if (!empty($product_images)) {
+                                                foreach ($product_images as $image) { ?>
+                                    <a class="product-gallery-item">
+                                        <img src="<?php echo esc_url($image) ?>" class="product-image"
+                                            alt="<?php the_title(); ?>">
+                                    </a>
+                                    <?php        }
+                                            }
+                                            ?>
                                 </div><!-- End .product-image-gallery -->
                             </div><!-- End .row -->
                         </div><!-- End .product-gallery -->
                     </div><!-- End .col-md-6 -->
 
                     <div class="col-md-6">
-                        <div class="product-details">
-                            <h1 class="product-title">Dark yellow lace cut out swing dress</h1>
-                            <!-- End .product-title -->
+                        <form id="add-to-card-form" method="post">
+                            <div class="product-details">
+                                <h1 class="product-title"><?php the_title(); ?></h1>
+                                <!-- End .product-title -->
 
-                            <div class="ratings-container">
-                                <div class="ratings">
-                                    <div class="ratings-val" style="width: 80%;"></div><!-- End .ratings-val -->
-                                </div><!-- End .ratings -->
-                                <a class="ratings-text" href="#product-review-link" id="review-link">( 2 Reviews )</a>
-                            </div><!-- End .rating-container -->
+                                <div class="ratings-container">
+                                    <div class="ratings">
+                                        <div class="ratings-val" style="width: 80%;"></div><!-- End .ratings-val -->
+                                    </div><!-- End .ratings -->
+                                    <a class="ratings-text" href="#product-review-link" id="review-link">( 2 Reviews
+                                        )</a>
+                                </div><!-- End .rating-container -->
 
-                            <div class="product-price">
-                                $84.00
-                            </div><!-- End .product-price -->
+                                <div class="product-price">
+                                    <?php if (!empty($discount)) { ?>
+                                    <span class="new-price">
+                                        <?php echo number_format($product_price - ($product_price * $discount / 100), 0, '.', ','); ?>
+                                        VND
+                                    </span>
+                                    <span class="old-price">
+                                        <?php echo number_format($product_price, 0, '.', ','); ?> VND
+                                    </span>
+                                    <?php } else { ?>
+                                    <span>
+                                        <?php echo number_format($product_price, 0, '.', ','); ?> VND
+                                    </span>
+                                    <?php } ?>
+                                </div><!-- End .product-price -->
+                                <div class="product-content">
+                                    <?php the_content(); ?>
+                                </div><!-- End .product-content -->
+                                <?php if (!empty($product_colors)) { ?>
+                                <div class="details-filter-row details-row-size">
+                                    <label>Color:</label>
 
-                            <div class="product-content">
-                                <p>Sed egestas, ante et vulputate volutpat, eros pede semper est, vitae luctus metus
-                                    libero eu augue. Morbi purus libero, faucibus adipiscing. Sed lectus. </p>
-                            </div><!-- End .product-content -->
+                                    <div class="product-nav product-nav-thumbs " id="product-group-radio">
+                                        <?php
+                                                    $count = 0;
+                                                    foreach ($product_colors as $color => $image_id) {
+                                                        $image_url = wp_get_attachment_url($image_id); ?>
+                                        <a class="product-radio-item <?php echo $count == 0 ? "active" : "" ?>">
+                                            <input <?php echo $count == 0 ? "checked" : "" ?>
+                                                value="<?php echo esc_attr($color)  ?>" type="radio" class="btn-check"
+                                                autocomplete="off" name="color" id="btncheck<?php echo $count ?>" />
+                                            <label for="btncheck<?php echo $count ?>">
+                                                <img class="product-image" src=" <?php echo esc_url($image_url) ?>"
+                                                    alt="<?php echo esc_html($color) ?>">
+                                            </label>
+                                        </a>
+                                        <?php $count++;
+                                                    } ?>
+                                    </div><!-- End .product-nav -->
+                                </div><!-- End .details-filter-row -->
+                                <?php }
+                                        // Lấy kích thước từ custom field của sản phẩm hiện tại
+                                        // $product_sizes = get_post_meta(get_the_ID(), '_product_sizes', true);
+                                        // Lấy danh sách các term (kích thước) từ taxonomy 'product_size' của sản phẩm hiện tại
+                                        $product_sizes = wp_get_post_terms(get_the_ID(), 'size');
 
-                            <div class="details-filter-row details-row-size">
-                                <label>Color:</label>
+                                        if (!empty($product_sizes) && !is_wp_error($product_sizes)) { ?>
 
-                                <div class="product-nav product-nav-thumbs">
-                                    <a href="#" class="active">
-                                        <img src="assets/images/products/single/1-thumb.jpg" alt="product desc">
-                                    </a>
-                                    <a href="#">
-                                        <img src="assets/images/products/single/2-thumb.jpg" alt="product desc">
-                                    </a>
-                                </div><!-- End .product-nav -->
-                            </div><!-- End .details-filter-row -->
+                                <div class="details-filter-row details-row-size">
+                                    <label for="size">Size:</label>
+                                    <div class="select-custom">
+                                        <select name="size" id="size" class="form-control">
+                                            <option>Select a size</option>
+                                            <?php foreach ($product_sizes as $size) { ?>
+                                            <option value="<?php echo esc_html($size->term_id) ?>">
+                                                <?php echo esc_html($size->name) ?></option>
+                                            <?php } ?>
+                                        </select>
+                                    </div><!-- End .select-custom -->
+                                </div><!-- End .details-filter-row -->
 
-                            <div class="details-filter-row details-row-size">
-                                <label for="size">Size:</label>
-                                <div class="select-custom">
-                                    <select name="size" id="size" class="form-control">
-                                        <option value="#" selected="selected">Select a size</option>
-                                        <option value="s">Small</option>
-                                        <option value="m">Medium</option>
-                                        <option value="l">Large</option>
-                                        <option value="xl">Extra Large</option>
-                                    </select>
-                                </div><!-- End .select-custom -->
+                                <?php } ?>
+                                <div class="details-filter-row details-row-size">
+                                    <label for="qty">Qty:</label>
+                                    <div class="product-details-quantity">
+                                        <input type="number" class="form-control" id="quantity" name="quantity"
+                                            value="1" min="1" max="10" step="1" data-decimals="0" required>
+                                    </div><!-- End .product-details-quantity -->
+                                </div><!-- End .details-filter-row -->
 
-                                <a href="#" class="size-guide"><i class="icon-th-list"></i>size guide</a>
-                            </div><!-- End .details-filter-row -->
 
-                            <div class="details-filter-row details-row-size">
-                                <label for="qty">Qty:</label>
-                                <div class="product-details-quantity">
-                                    <input type="number" id="qty" class="form-control" value="1" min="1" max="10"
-                                        step="1" data-decimals="0" required="" style="display: none;">
-                                    <div class="input-group  input-spinner">
-                                        <div class="input-group-prepend"><button style="min-width: 26px"
-                                                class="btn btn-decrement btn-spinner" type="button"><i
-                                                    class="icon-minus"></i></button></div><input type="text"
-                                            style="text-align: center" class="form-control " required="" placeholder="">
-                                        <div class="input-group-append"><button style="min-width: 26px"
-                                                class="btn btn-increment btn-spinner" type="button"><i
-                                                    class="icon-plus"></i></button></div>
+                                <div class="product-details-action">
+                                    <button href="" type="submit" name="product-id" id="product-id"
+                                        value="<?php echo get_the_ID() ?>" class="btn-product btn-cart"><span>add to
+                                            cart</span>
+                                    </button>
+
+                                    <div class="details-action-wrapper">
+                                        <a href="" class="btn-product btn-wishlist" title="Wishlist"><span>Add to
+                                                Wishlist</span></a>
+                                    </div><!-- End .details-action-wrapper -->
+                                </div><!-- End .product-details-action -->
+
+                                <div class="product-details-footer">
+                                    <div class="product-cat">
+                                        <span>Category:</span>
+                                        <?php
+                                                if (!empty($product_categories) && !is_wp_error($product_categories)) {
+                                                    foreach ($product_categories as $category) {
+                                                ?>
+                                        <a href="<?php echo  esc_url(get_term_link($category)) ?>">
+                                            <?php echo esc_html($category->name) ?>
+                                        </a>,
+                                        <?php }
+                                                } ?>
+                                    </div><!-- End .product-cat -->
+
+                                    <div class="social-icons social-icons-sm">
+                                        <span class="social-label">Share:</span>
+                                        <a href="#" class="social-icon" title="Facebook" target="_blank"><i
+                                                class="icon-facebook-f"></i></a>
+                                        <a href="#" class="social-icon" title="Twitter" target="_blank"><i
+                                                class="icon-twitter"></i></a>
+                                        <a href="#" class="social-icon" title="Instagram" target="_blank"><i
+                                                class="icon-instagram"></i></a>
+                                        <a href="#" class="social-icon" title="Pinterest" target="_blank"><i
+                                                class="icon-pinterest"></i></a>
                                     </div>
-                                </div><!-- End .product-details-quantity -->
-                            </div><!-- End .details-filter-row -->
-
-                            <div class="product-details-action">
-                                <a href="#" class="btn-product btn-cart"><span>add to cart</span></a>
-
-                                <div class="details-action-wrapper">
-                                    <a href="#" class="btn-product btn-wishlist" title="Wishlist"><span>Add to
-                                            Wishlist</span></a>
-                                    <a href="#" class="btn-product btn-compare" title="Compare"><span>Add to
-                                            Compare</span></a>
-                                </div><!-- End .details-action-wrapper -->
-                            </div><!-- End .product-details-action -->
-
-                            <div class="product-details-footer">
-                                <div class="product-cat">
-                                    <span>Category:</span>
-                                    <a href="#">Women</a>,
-                                    <a href="#">Dresses</a>,
-                                    <a href="#">Yellow</a>
-                                </div><!-- End .product-cat -->
-
-                                <div class="social-icons social-icons-sm">
-                                    <span class="social-label">Share:</span>
-                                    <a href="#" class="social-icon" title="Facebook" target="_blank"><i
-                                            class="icon-facebook-f"></i></a>
-                                    <a href="#" class="social-icon" title="Twitter" target="_blank"><i
-                                            class="icon-twitter"></i></a>
-                                    <a href="#" class="social-icon" title="Instagram" target="_blank"><i
-                                            class="icon-instagram"></i></a>
-                                    <a href="#" class="social-icon" title="Pinterest" target="_blank"><i
-                                            class="icon-pinterest"></i></a>
-                                </div>
-                            </div><!-- End .product-details-footer -->
-                        </div><!-- End .product-details -->
+                                </div><!-- End .product-details-footer -->
+                            </div><!-- End .product-details -->
+                        </form>
                     </div><!-- End .col-md-6 -->
                 </div><!-- End .row -->
             </div><!-- End .product-details-top -->
@@ -410,7 +449,8 @@
                                     </div><!-- End .product-action-vertical -->
 
                                     <div class="product-action">
-                                        <a href="#" class="btn-product btn-cart"><span>add to cart</span></a>
+                                        <button class="btn-product add-to-cart-btn btn-cart"><span>add to
+                                                cart</span></button>
                                     </div><!-- End .product-action -->
                                 </figure><!-- End .product-media -->
 
@@ -577,4 +617,20 @@
     </div><!-- End .page-content -->
 </main>
 
-<?php get_footer(); ?>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    document.querySelectorAll(".product-image").forEach(function(img) {
+        img.addEventListener("click", function() {
+            const mainImage = document.querySelector(
+                ".product-main-image img");
+            if (mainImage) {
+                mainImage.src = img.src;
+            }
+        });
+    });
+});
+</script>
+<?php
+    endwhile;
+endif;
+get_footer(); ?>

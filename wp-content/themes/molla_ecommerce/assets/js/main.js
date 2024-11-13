@@ -306,51 +306,17 @@
       });
     }
   }
+  // On click change thumbs active item
+  $(".product-gallery-item").on("click", function (e) {
+    $("#product-zoom-gallery").find("a").removeClass("active");
+    $(this).addClass("active");
 
-  // Product Image Zoom plugin - product pages
-  if ($.fn.elevateZoom) {
-    $("#product-zoom").elevateZoom({
-      gallery: "product-zoom-gallery",
-      galleryActiveClass: "active",
-      zoomType: "inner",
-      cursor: "crosshair",
-      zoomWindowFadeIn: 400,
-      zoomWindowFadeOut: 400,
-      responsive: true,
-    });
-
-    // On click change thumbs active item
-    $(".product-gallery-item").on("click", function (e) {
-      $("#product-zoom-gallery").find("a").removeClass("active");
-      $(this).addClass("active");
-
-      e.preventDefault();
-    });
-
-    var ez = $("#product-zoom").data("elevateZoom");
-
-    // Open popup - product images
-    $("#btn-product-gallery").on("click", function (e) {
-      if ($.fn.magnificPopup) {
-        $.magnificPopup.open(
-          {
-            items: ez.getGalleryList(),
-            type: "image",
-            gallery: {
-              enabled: true,
-            },
-            fixedContentPos: false,
-            removalDelay: 600,
-            closeBtnInside: false,
-          },
-          0
-        );
-
-        e.preventDefault();
-      }
-    });
-  }
-
+    e.preventDefault();
+  });
+  $(".product-radio-item").on("click", function (e) {
+    $("#product-group-radio").find("a").removeClass("active");
+    $(this).addClass("active");
+  });
   // Product Gallery - product-gallery.html
   if ($.fn.owlCarousel && $.fn.elevateZoom) {
     var owlProductGallery = $(".product-gallery-carousel");

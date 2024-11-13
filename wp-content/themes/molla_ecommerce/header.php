@@ -52,7 +52,7 @@
                         </button>
 
                         <a href="<?php echo home_url(); ?>" class="logo">
-                            <img src="<?php echo get_template_directory_uri(); ?>/assets/images/demos/demo-2/logo.png"
+                            <img src="<?php echo get_template_directory_uri(); ?>/assets/images/logo.png"
                                 alt="Molla Logo" width="105" height="25">
                         </a>
                     </div><!-- End .header-left -->
@@ -94,7 +94,7 @@
                         </div><!-- End .compare-dropdown -->
 
                         <div class="dropdown cart-dropdown" id="cart-content">
-                            <?php sc_display_cart() ?>
+                            <?php display_cart() ?>
                         </div><!-- End .cart-dropdown -->
 
                     </div><!-- End .header-right -->
