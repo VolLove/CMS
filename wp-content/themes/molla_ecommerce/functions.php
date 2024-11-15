@@ -312,7 +312,7 @@ function display_cart()
                     <img src="<?php echo $image_url ?>" alt="product">
                 </a>
             </figure>
-            <button href="#" class="remove-from-cart-btn btn-remove" <?php echo $data; ?> title="Remove Product">
+            <button href="#" id="remove-from-cart-btn" class=" btn-remove" <?php echo $data; ?> title="Remove Product">
                 <i class="icon-close"></i></button>
         </div>
         <?php
@@ -474,7 +474,9 @@ function cart_content()
                 </table><!-- End .table table-wishlist -->
 
                 <div class="cart-bottom">
-                    <a href="#" class="btn btn-outline-dark-2"><span>UPDATE CART</span><i class="icon-refresh"></i></a>
+                    <a href="#" class="btn btn-outline-dark-2" id="clear-cart-btn">
+                        Clear cart
+                    </a>
                 </div><!-- End .cart-bottom -->
             </div><!-- End .col-lg-9 -->
             <aside class="col-lg">

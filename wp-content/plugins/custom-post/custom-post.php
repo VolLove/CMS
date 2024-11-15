@@ -536,16 +536,6 @@ function sc_get_cart_content()
 add_action('wp_ajax_sc_get_cart_content', 'sc_get_cart_content');
 add_action('wp_ajax_nopriv_sc_get_cart_content', 'sc_get_cart_content');
 
-function sc_get_page_cart_content()
-{
-    ob_start();
-    cart_content(); // Gọi hàm hiển thị giỏ hàng
-    $cart_html = ob_get_clean();
-
-    wp_send_json_success(['cart_html' => $cart_html]);
-}
-add_action('wp_ajax_sc_get_page_cart_content', 'sc_get_page_cart_content');
-add_action('wp_ajax_nopriv_sc_get_page_cart_content', 'sc_get_page_cart_content');
 
 // Load JavaScript cho Ajax
 function sc_cart_scripts()
