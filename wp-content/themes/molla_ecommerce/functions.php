@@ -117,7 +117,6 @@ function my_custom_theme_enqueue_scripts()
     wp_enqueue_script('waypoints', $theme_directory . '/assets/js/jquery.waypoints.min.js', array('jquery'), null, true);
     wp_enqueue_script('superfish', $theme_directory . '/assets/js/superfish.min.js', array('jquery'), null, true);
     wp_enqueue_script('owl-carousel', $theme_directory . '/assets/js/owl.carousel.min.js', array('jquery'), null, true);
-    wp_enqueue_script('input-spinner', $theme_directory . '/assets/js/bootstrap-input-spinner.js', array('jquery'), null, true);
     wp_enqueue_script('plugin', $theme_directory . '/assets/js/jquery.plugin.min.js', array('jquery'), null, true);
     wp_enqueue_script(
         'magnific-popup',
@@ -352,7 +351,8 @@ function display_cart()
     </div><!-- End .dropdown-cart-total -->
 </div><!-- End .dropdown-menu -->
 <?php }
-} // Shortcode để hiển thị giỏ hàng
+}
+
 function coutnCart()
 {
     if (empty($_SESSION['cart'])) {
@@ -452,14 +452,15 @@ function cart_content()
                             </td>
                             <td class="quantity-col">
                                 <div class="cart-product-quantity">
-                                    <input type="number" class="form-control" value="<?php echo $quantity ?>" min="1"
-                                        step="1" data-decimals="0" required="" style="display: none;">
+                                    <input type="number" class="form-control" id="quantity"
+                                        value="<?php echo $quantity ?>" min="1" step="1" data-decimals="0"
+                                        <?php echo $data; ?> required>
                                 </div><!-- End .cart-product-quantity -->
                             </td>
                             <td class="total-col"> <?php echo number_format($f_product_price, 0, '.', ','); ?>
                                 đ</td>
-                            <td class="remove-col"><button <?php echo $data; ?>
-                                    class="btn-remove remove-from-cart-btn"><i class="icon-close"></i></button>
+                            <td class="remove-col"><button <?php echo $data; ?> id="remove-from-cart-btn"
+                                    class="btn-remove"><i class="icon-close"></i></button>
                             </td>
                         </tr>
 

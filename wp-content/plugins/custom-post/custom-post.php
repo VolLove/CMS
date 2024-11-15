@@ -430,6 +430,9 @@ function sc_add_to_cart()
     // Lấy ID sản phẩm, số lượng, size và màu từ yêu cầu AJAX
     $product_id = intval($_POST['product_id']);
     $quantity = intval($_POST['quantity']);
+    if ($quantity <= 0) {
+        $quantity = 1;
+    }
     $size = isset($_POST['size']) ? intval($_POST['size']) : '';;
     $color = isset($_POST['color']) ? sanitize_text_field($_POST['color']) : '';;
     //Kiểm tra sản phẩm, size, màu có tồn tại hay không
@@ -481,7 +484,34 @@ function sc_add_to_cart()
 add_action('wp_ajax_sc_add_to_cart', 'sc_add_to_cart');
 add_action('wp_ajax_nopriv_sc_add_to_cart', 'sc_add_to_cart');
 
-// Xử lý xóa sản phẩm khỏi giỏ hàng
+function sc_update_cart_quantity()
+{
+
+    $product_id = intval($_POST['product_id']);
+    $quantity = intval($_POST['quantity']);
+    $size = isset($_POST['size']) ? intval($_POST['size']) : '';;
+    $color = isset($_POST['color']) ? sanitize_text_field($_POST['color']) : '';;
+
+    if (isset($_SESSION['cart'][$product_id]['options'][$size][$color])) {
+        $_SESSION['cart'][$product_id]['options'][$size][$color] = $quantity;
+        if ($quantity <= 0) {
+            unset($_SESSION['cart'][$product_id]['options'][$size][$color]);
+
+            if (empty($_SESSION['cart'][$product_id]['options'][$size])) {
+                unset($_SESSION['cart'][$product_id]['options'][$size]);
+            }
+
+            if (empty($_SESSION['cart'][$product_id]['options'])) {
+                unset($_SESSION['cart'][$product_id]);
+            }
+        }
+    }
+    wp_send_json_success();
+}
+add_action('wp_ajax_sc_update_cart_quantity', 'sc_update_cart_quantity');
+add_action('wp_ajax_nopriv_sc_update_cart_quantity', 'sc_update_cart_quantity');
+
+
 // Xóa sản phẩm khỏi giỏ hàng
 function sc_remove_from_cart()
 {
@@ -536,7 +566,16 @@ function sc_get_cart_content()
 add_action('wp_ajax_sc_get_cart_content', 'sc_get_cart_content');
 add_action('wp_ajax_nopriv_sc_get_cart_content', 'sc_get_cart_content');
 
+function sc_get_page_cart_content()
+{
+    ob_start();
+    cart_content(); // Gọi hàm hiển thị giỏ hàng
+    $cart_page_html = ob_get_clean();
 
+    wp_send_json_success(['cart_page_html' => $cart_page_html]);
+}
+add_action('wp_ajax_sc_get_page_cart_content', 'sc_get_page_cart_content');
+add_action('wp_ajax_nopriv_sc_get_page_cart_content', 'sc_get_page_cart_content');
 // Load JavaScript cho Ajax
 function sc_cart_scripts()
 {
