@@ -260,31 +260,49 @@ function display_cart()
                         // Hiển thị thông tin size và color
                         if (isset($product_info['options'])) {
                             foreach ($product_info['options'] as $size => $colors) {
-
                                 foreach ($colors as $color => $quantity) {
+                                    $data = 'data-product-id = "' . $product_id . '"'; //data cho button delete
                                     $product_price = (int)get_post_meta($product_id, '_product_price', true);
                                     $product_colors = get_post_meta($product_id, '_product_colors', true);
+                                    $discount = get_post_meta($product_id, '_product_discount', true);
+                                    $discount_price = $product_price * (int)$discount / 100;
                                     $product_size = get_term($size, 'size');
-
-                                    $total += $product_price * $quantity;
+                                    $total += ($product_price - $discount_price)  * $quantity;
                 ?>
         <div class="product">
             <div class="product-cart-details">
                 <h4 class="product-title">
-                    <a href="<?php echo get_permalink($product_id) ?> "><?php echo $product->post_title ?></a>
+                    <span class="cart-product-qty"><?php echo $quantity ?> x </span> <a
+                        href="<?php echo get_permalink($product_id) ?> "><?php echo $product->post_title ?></a>
                 </h4>
                 <span class="cart-product-info">
-                    <span class="cart-product-qty"><?php echo $quantity ?></span>
-                    x <?php echo number_format($product_price, 0, ',', '.'); ?> VND
+                    <?php if (!empty($discount)) { ?>
+                    <span class="old-price">
+                        <?php echo number_format($product_price, 0, '.', ','); ?> VND
+                    </span>
+                    <span class="new-price">
+                        <?php echo number_format($product_price - ($product_price * $discount / 100), 0, '.', ','); ?>
+                        VND
+                    </span>
+                    <?php } else { ?>
+                    <span>
+                        <?php echo number_format($product_price, 0, '.', ','); ?> VND
+                    </span>
+                    <?php } ?>
                 </span><br>
                 <?php if (isset($product_colors[$color])) {
+                                                $data = $data . 'data-color="' . $color . '"'; //lấy data color nếu có
                                                 $image_id = $product_colors[$color]; // Lấy ID ảnh của màu
                                                 $image_url = wp_get_attachment_url($image_id); // Lấy URL của ảnh
                                             ?>
-                <span class="cart-product-info">Màu: <?php echo $color ?></span>
-                <?php } ?>
-                <br>
-                <?php if (isset($product_size->name)) { ?>
+                <span class="cart-product-info">Color: <?php echo $color ?></span> <br>
+                <?php } else {
+                                                $image_url = get_the_post_thumbnail_url($product_id, 'full'); //không có màu lấy ảnh thumbnail
+                                            } ?>
+
+                <?php if (isset($product_size->name)) {
+                                                $data = $data . 'data-size="' . $size . '"'; ?>
+
                 <span class="cart-product-info">Size: <?php echo $product_size->name ?></span>
                 <?php } ?>
             </div><!-- End .product-cart-details -->
@@ -294,8 +312,7 @@ function display_cart()
                     <img src="<?php echo $image_url ?>" alt="product">
                 </a>
             </figure>
-            <button href="#" class="remove-from-cart-btn btn-remove" data-size="<?php echo $size; ?>"
-                data-color="<?php echo $color; ?>" data-product-id="<?php echo $product_id ?>" title="Remove Product">
+            <button href="#" class="remove-from-cart-btn btn-remove" <?php echo $data; ?> title="Remove Product">
                 <i class="icon-close"></i></button>
         </div>
         <?php
@@ -342,15 +359,196 @@ function coutnCart()
         return 0;
     } else {
         $totalcount = 0;
-        foreach ($_SESSION['cart'] as $product_info) {
+        foreach ($_SESSION['cart'] as $product_id => $product_info) {
             if (isset($product_info['options'])) {
                 foreach ($product_info['options'] as $size => $colors) {
                     foreach ($colors as $color => $quantity) {
-                        $totalcount += 1;
+                        $totalcount++;
                     }
                 }
             }
-            return $totalcount;
         }
+        return $totalcount;
     }
 } // Tự động tạo trang khi kích hoạt plugin
+
+function cart_content()
+{
+    if (empty($_SESSION['cart'])) {
+    } else { ?>
+
+<div class="cart">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <table class="table table-cart table-mobile">
+                    <thead>
+                        <tr>
+                            <th style="width: 20%;">Product</th>
+                            <th style="width: 20%;">Price</th>
+                            <th style="width: 20%;">Quantity</th>
+                            <th style="width: 20%;">Total</th>
+                            <th style="width: 5%;"></th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <?php
+                                $total = 0;
+                                foreach ($_SESSION['cart'] as $product_id => $product_info) {
+                                    $product = get_post($product_id);
+                                    if ($product) {
+                                        if (isset($product_info['options'])) {
+                                            foreach ($product_info['options'] as $size => $colors) {
+                                                foreach ($colors as $color => $quantity) {
+                                                    $data = 'data-product-id = "' . $product_id . '"';
+                                                    $product_price = (int)get_post_meta($product_id, '_product_price', true);
+                                                    $product_colors = get_post_meta($product_id, '_product_colors', true);
+                                                    $discount = (int)get_post_meta($product_id, '_product_discount', true);
+                                                    $discount_price = $product_price * $discount / 100;
+                                                    $product_size = get_term($size, 'size');
+                                                    $total += ($product_price - $discount_price)  * $quantity;
+                                                    $image_url = get_the_post_thumbnail_url($product_id, 'full'); //không có màu lấy ảnh thumbnail
+                                                    if (isset($product_colors[$color])) {
+                                                        $data = $data . 'data-color="' . $color . '"'; //lấy data color nếu có
+                                                        $image_id = $product_colors[$color]; // Lấy ID ảnh của màu
+                                                        $image_url = wp_get_attachment_url($image_id); // Lấy URL của ảnh
+                                                    } ?>
+                        <tr>
+                            <td class="product-col">
+                                <div class="product">
+                                    <figure class="product-media">
+                                        <a href="#">
+                                            <img src="<?php echo $image_url ?>" alt="Product image">
+                                        </a>
+                                    </figure>
+
+                                    <h3 class="product-title">
+                                        <a href="<?php echo get_permalink($product_id) ?>"><?php echo $product->post_title ?>
+                                            <?php if (isset($product_size->name)) {
+                                                                            $data = $data . 'data-size="' . $size . '"'; ?>
+
+                                            <span class="cart-product-info">| Size:
+                                                <?php echo $product_size->name ?></span>
+                                            <?php } ?></a>
+                                    </h3><!-- End .product-title -->
+                                </div><!-- End .product -->
+                            </td>
+                            <td class="price-col">
+                                <?php if (!empty($discount)) { ?>
+                                <span class="old-price">
+                                    <?php echo number_format($product_price, 0, '.', ','); ?> đ
+                                </span>
+                                <span class="new-price">
+                                    <?php echo number_format($f_product_price = $product_price - ($product_price * $discount / 100), 0, '.', ','); ?>
+                                    đ
+                                </span>
+                                <?php } else { ?>
+                                <span>
+                                    <?php echo number_format($f_product_price = $product_price, 0, '.', ','); ?>
+                                    đ
+                                </span>
+                                <?php } ?>
+                            </td>
+                            <td class="quantity-col">
+                                <div class="cart-product-quantity">
+                                    <input type="number" class="form-control" value="<?php echo $quantity ?>" min="1"
+                                        step="1" data-decimals="0" required="" style="display: none;">
+                                </div><!-- End .cart-product-quantity -->
+                            </td>
+                            <td class="total-col"> <?php echo number_format($f_product_price, 0, '.', ','); ?>
+                                đ</td>
+                            <td class="remove-col"><button <?php echo $data; ?>
+                                    class="btn-remove remove-from-cart-btn"><i class="icon-close"></i></button>
+                            </td>
+                        </tr>
+
+                        <?php }
+                                            }
+                                        }
+                                    }
+                                }
+                                ?>
+
+                    </tbody>
+                </table><!-- End .table table-wishlist -->
+
+                <div class="cart-bottom">
+                    <a href="#" class="btn btn-outline-dark-2"><span>UPDATE CART</span><i class="icon-refresh"></i></a>
+                </div><!-- End .cart-bottom -->
+            </div><!-- End .col-lg-9 -->
+            <aside class="col-lg">
+                <div class="summary summary-cart">
+                    <h3 class="summary-title">Cart Total</h3><!-- End .summary-title -->
+
+                    <table class="table table-summary">
+                        <tbody>
+                            <tr class="summary-subtotal">
+                                <td>Subtotal:</td>
+                                <td><?php echo number_format($total, 0, ',', '.') ?> đ</td>
+                            </tr><!-- End .summary-subtotal -->
+                            <tr class="summary-shipping">
+                                <td>Shipping:</td>
+                                <td>&nbsp;</td>
+                            </tr>
+
+                            <tr class="summary-shipping-row">
+                                <td>
+                                    <div class="custom-control custom-radio">
+                                        <input type="radio" id="free-shipping" name="shipping"
+                                            class="custom-control-input">
+                                        <label class="custom-control-label" for="free-shipping">Free
+                                            Shipping</label>
+                                    </div><!-- End .custom-control -->
+                                </td>
+                                <td>$0.00</td>
+                            </tr><!-- End .summary-shipping-row -->
+
+                            <tr class="summary-shipping-row">
+                                <td>
+                                    <div class="custom-control custom-radio">
+                                        <input type="radio" id="standart-shipping" name="shipping"
+                                            class="custom-control-input">
+                                        <label class="custom-control-label" for="standart-shipping">Standart:</label>
+                                    </div><!-- End .custom-control -->
+                                </td>
+                                <td>$10.00</td>
+                            </tr><!-- End .summary-shipping-row -->
+
+                            <tr class="summary-shipping-row">
+                                <td>
+                                    <div class="custom-control custom-radio">
+                                        <input type="radio" id="express-shipping" name="shipping"
+                                            class="custom-control-input">
+                                        <label class="custom-control-label" for="express-shipping">Express:</label>
+                                    </div><!-- End .custom-control -->
+                                </td>
+                                <td>$20.00</td>
+                            </tr><!-- End .summary-shipping-row -->
+
+                            <tr class="summary-shipping-estimate">
+                                <td>Estimate for Your Country<br> <a href="dashboard.html">Change address</a>
+                                </td>
+                                <td>&nbsp;</td>
+                            </tr><!-- End .summary-shipping-estimate -->
+
+                            <tr class="summary-total">
+                                <td>Total:</td>
+                                <td>$160.00</td>
+                            </tr><!-- End .summary-total -->
+                        </tbody>
+                    </table><!-- End .table table-summary -->
+
+                    <a href="checkout.html" class="btn btn-outline-primary-2 btn-order btn-block">PROCEED TO
+                        CHECKOUT</a>
+                </div><!-- End .summary -->
+
+                <a href="category.html" class="btn btn-outline-dark-2 btn-block mb-3"><span>CONTINUE
+                        SHOPPING</span><i class="icon-refresh"></i></a>
+            </aside><!-- End .col-lg-3 -->
+        </div><!-- End .row -->
+    </div><!-- End .container -->
+</div><!-- End .cart -->
+
+<?php }
+}

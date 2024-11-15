@@ -6,7 +6,6 @@ get_header(); // Gọi file header.php
 ?>
 <main class="main">
     <div class="container">
-        <?php echo do_shortcode('[checkout_page]'); ?>
     </div>
 </main><!-- End .main -->
 <?php

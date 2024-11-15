@@ -430,18 +430,24 @@ function sc_add_to_cart()
     // Lấy ID sản phẩm, số lượng, size và màu từ yêu cầu AJAX
     $product_id = intval($_POST['product_id']);
     $quantity = intval($_POST['quantity']);
-    $size = isset($_POST['size']) ? intval($_POST['size']) : 0;;
+    $size = isset($_POST['size']) ? intval($_POST['size']) : '';;
     $color = isset($_POST['color']) ? sanitize_text_field($_POST['color']) : '';;
     //Kiểm tra sản phẩm, size, màu có tồn tại hay không
     $product = get_post($product_id);
     $product_colors = get_post_meta($product_id, '_product_colors', true);
     $product_size = get_term($size, 'size');
-    if (!isset($product_colors[$color]) || !isset($product_size->name)) {
-
-        wp_send_json_error(['message' => 'Kích thước hoặc màu sắc không hợp lệ.']);
-        // return;
+    $product_sizes = wp_get_post_terms($product_id, 'size');
+    if (!empty($product_sizes)) {
+        if (!isset($product_size->name)) {
+            wp_send_json_error(['message' => 'Chưa chọn khích thước!.']);
+        }
     }
-    if ($product) {
+    if (!empty($product_colors)) {
+        if (!isset($product_colors[$color])) {
+            wp_send_json_error(['message' => 'Chưa chọn màu!.']);
+        }
+    }
+    if (!empty($product)) {
         // Khởi tạo giỏ hàng nếu chưa có
         if (!isset($_SESSION['cart'])) {
             $_SESSION['cart'] = [];
@@ -467,7 +473,7 @@ function sc_add_to_cart()
             ];
         }
 
-        wp_send_json_success(['message' => 'Đã thêm sản phẩm vào giỏ hàng thành công!']);
+        wp_send_json_success();
     } else {
         wp_send_json_error(['message' => 'Sản phẩm không tồn tại.']);
     }
@@ -480,10 +486,11 @@ add_action('wp_ajax_nopriv_sc_add_to_cart', 'sc_add_to_cart');
 function sc_remove_from_cart()
 {
     // Lấy ID sản phẩm, size, và color từ yêu cầu AJAX
+    // unset($_SESSION['cart']);
+
     $product_id = intval($_POST['product_id']);
     $size = isset($_POST['size']) ? intval($_POST['size']) : '';
     $color = isset($_POST['color']) ? sanitize_text_field($_POST['color']) : '';
-
     // Kiểm tra nếu giỏ hàng đã được khởi tạo
     if (isset($_SESSION['cart'][$product_id])) {
         // Xóa sản phẩm có size và color cụ thể
@@ -494,9 +501,11 @@ function sc_remove_from_cart()
             if (empty($_SESSION['cart'][$product_id]['options'][$size])) {
                 unset($_SESSION['cart'][$product_id]['options'][$size]);
             }
+
             if (empty($_SESSION['cart'][$product_id]['options'])) {
                 unset($_SESSION['cart'][$product_id]);
             }
+
             wp_send_json_success();
         }
     }
@@ -526,6 +535,17 @@ function sc_get_cart_content()
 }
 add_action('wp_ajax_sc_get_cart_content', 'sc_get_cart_content');
 add_action('wp_ajax_nopriv_sc_get_cart_content', 'sc_get_cart_content');
+
+function sc_get_page_cart_content()
+{
+    ob_start();
+    cart_content(); // Gọi hàm hiển thị giỏ hàng
+    $cart_html = ob_get_clean();
+
+    wp_send_json_success(['cart_html' => $cart_html]);
+}
+add_action('wp_ajax_sc_get_page_cart_content', 'sc_get_page_cart_content');
+add_action('wp_ajax_nopriv_sc_get_page_cart_content', 'sc_get_page_cart_content');
 
 // Load JavaScript cho Ajax
 function sc_cart_scripts()

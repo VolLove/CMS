@@ -75,7 +75,9 @@
 
                     <div class="header-right">
                         <div class="account">
-                            <a href="<?php echo get_template_directory_uri(); ?>/dashboard.html" title="My account">
+                            <a href="<?php
+                                        $user_id = get_current_user_id();
+                                        echo get_edit_profile_url($user_id); ?>/dashboard.html" title="My account">
                                 <div class="icon">
                                     <i class="icon-user"></i>
                                 </div>
