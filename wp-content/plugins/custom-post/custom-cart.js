@@ -90,7 +90,6 @@ jQuery(document).ready(function ($) {
       }
     );
   });
-
   // Hàm load lại giỏ hàng
   function reloadCartContent() {
     $.post(
@@ -100,7 +99,7 @@ jQuery(document).ready(function ($) {
       },
       function (response) {
         if (response.success) {
-          $("#cart-content").html(response.data.cart_html); // Cập nhật nội dung giỏ hàng
+          $("#cart-dropdown-content").html(response.data.cart_html); // Cập nhật nội dung giỏ hàng
         }
       }
     );
@@ -113,7 +112,7 @@ jQuery(document).ready(function ($) {
       },
       function (response) {
         if (response.success) {
-          $("#page-cart-content").html(response.data.cart_page_html); // Cập nhật nội dung giỏ hàng
+          $("#page-content").html(response.data.cart_page_html); // Cập nhật nội dung giỏ hàng
         }
       }
     );

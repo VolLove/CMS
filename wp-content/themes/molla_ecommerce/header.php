@@ -30,9 +30,9 @@
                                 <ul>
                                     <li>
                                         <?php if (is_user_logged_in()) : ?>
-                                        <a href="<?php echo wp_logout_url(home_url()); ?>">Sign out</a>
+                                            <a href="<?php echo wp_logout_url(home_url()); ?>">Sign out</a>
                                         <?php else : ?>
-                                        <a href="<?php echo wp_login_url(home_url()); ?>">Sign in / Sign up</a>
+                                            <a href="<?php echo wp_login_url(home_url()); ?>">Sign in / Sign up</a>
                                         <?php endif; ?>
                                     </li>
                                 </ul>
@@ -95,7 +95,7 @@
                             </a>
                         </div><!-- End .compare-dropdown -->
 
-                        <div class="dropdown cart-dropdown" id="cart-content">
+                        <div class="dropdown cart-dropdown" id="cart-dropdown-content">
                             <?php display_cart() ?>
                         </div><!-- End .cart-dropdown -->
 

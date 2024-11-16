@@ -543,6 +543,7 @@ function sc_remove_from_cart()
 add_action('wp_ajax_sc_remove_from_cart', 'sc_remove_from_cart');
 add_action('wp_ajax_nopriv_sc_remove_from_cart', 'sc_remove_from_cart');
 
+
 // Xóa toàn bộ giỏ hàng
 function sc_clear_cart()
 {
@@ -569,7 +570,7 @@ add_action('wp_ajax_nopriv_sc_get_cart_content', 'sc_get_cart_content');
 function sc_get_page_cart_content()
 {
     ob_start();
-    cart_content(); // Gọi hàm hiển thị giỏ hàng
+    sc_cart_content(); // Gọi hàm hiển thị giỏ hàng
     $cart_page_html = ob_get_clean();
 
     wp_send_json_success(['cart_page_html' => $cart_page_html]);

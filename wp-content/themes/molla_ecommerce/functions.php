@@ -7,8 +7,8 @@ function theme_create_cart_page()
     // Nếu trang chưa tồn tại, tạo trang mới
     if (!$cart_page) {
         $new_page = array(
-            'post_title'    => 'Giỏ hàng',
-            'page_template' => 'page-cart.php',
+            'post_title'    => 'Shopping Cart',
+            'post_content'  => '[cart_content]',
             'post_status'   => 'publish',
             'post_type'     => 'page',
             'post_name'     => 'gio-hang'
@@ -23,7 +23,7 @@ function theme_create_cart_page()
     // Nếu trang chưa tồn tại, tạo trang mới
     if (!$checkout_page) {
         $new_page_id = wp_insert_post(array(
-            'post_title'    => 'Thanh toán',
+            'post_title'    => 'Checkout',
             'page_template' => 'page-check-out.php',
             'post_status'   => 'publish',
             'post_type'     => 'page',
@@ -372,7 +372,7 @@ function coutnCart()
     }
 } // Tự động tạo trang khi kích hoạt plugin
 
-function cart_content()
+function sc_cart_content()
 {
     if (empty($_SESSION['cart'])) {
     } else { ?>
@@ -384,10 +384,10 @@ function cart_content()
                 <table class="table table-cart table-mobile">
                     <thead>
                         <tr>
-                            <th style="width: 20%;">Product</th>
-                            <th style="width: 20%;">Price</th>
-                            <th style="width: 20%;">Quantity</th>
-                            <th style="width: 20%;">Total</th>
+                            <th style="width: 50%;">Product</th>
+                            <th>Price</th>
+                            <th>Quantity</th>
+                            <th>Total</th>
                             <th style="width: 5%;"></th>
                         </tr>
                     </thead>
@@ -430,7 +430,10 @@ function cart_content()
 
                                             <span class="cart-product-info">| Size:
                                                 <?php echo $product_size->name ?></span>
-                                            <?php } ?></a>
+                                            <?php } ?>
+                                            <span class="cart-product-info">
+                                                <?php echo $color ? '| Color: ' . $color : '' ?></span>
+                                        </a>
                                     </h3><!-- End .product-title -->
                                 </div><!-- End .product -->
                             </td>
@@ -439,6 +442,7 @@ function cart_content()
                                 <span class="old-price">
                                     <?php echo number_format($product_price, 0, '.', ','); ?> đ
                                 </span>
+                                <br>
                                 <span class="new-price">
                                     <?php echo number_format($f_product_price = $product_price - ($product_price * $discount / 100), 0, '.', ','); ?>
                                     đ
@@ -457,8 +461,11 @@ function cart_content()
                                         <?php echo $data; ?> required>
                                 </div><!-- End .cart-product-quantity -->
                             </td>
-                            <td class="total-col"> <?php echo number_format($f_product_price, 0, '.', ','); ?>
-                                đ</td>
+                            <td class="total-col">
+                                <?php
+                                                            $t = $f_product_price * $quantity;
+                                                            echo number_format($t, 0, '.', ','); ?>
+                                VNĐ</td>
                             <td class="remove-col"><button <?php echo $data; ?> id="remove-from-cart-btn"
                                     class="btn-remove"><i class="icon-close"></i></button>
                             </td>
@@ -486,67 +493,26 @@ function cart_content()
 
                     <table class="table table-summary">
                         <tbody>
-                            <tr class="summary-subtotal">
-                                <td>Subtotal:</td>
-                                <td><?php echo number_format($total, 0, ',', '.') ?> đ</td>
-                            </tr><!-- End .summary-subtotal -->
-                            <tr class="summary-shipping">
-                                <td>Shipping:</td>
-                                <td>&nbsp;</td>
-                            </tr>
-
-                            <tr class="summary-shipping-row">
-                                <td>
-                                    <div class="custom-control custom-radio">
-                                        <input type="radio" id="free-shipping" name="shipping"
-                                            class="custom-control-input">
-                                        <label class="custom-control-label" for="free-shipping">Free
-                                            Shipping</label>
-                                    </div><!-- End .custom-control -->
-                                </td>
-                                <td>$0.00</td>
-                            </tr><!-- End .summary-shipping-row -->
-
-                            <tr class="summary-shipping-row">
-                                <td>
-                                    <div class="custom-control custom-radio">
-                                        <input type="radio" id="standart-shipping" name="shipping"
-                                            class="custom-control-input">
-                                        <label class="custom-control-label" for="standart-shipping">Standart:</label>
-                                    </div><!-- End .custom-control -->
-                                </td>
-                                <td>$10.00</td>
-                            </tr><!-- End .summary-shipping-row -->
-
-                            <tr class="summary-shipping-row">
-                                <td>
-                                    <div class="custom-control custom-radio">
-                                        <input type="radio" id="express-shipping" name="shipping"
-                                            class="custom-control-input">
-                                        <label class="custom-control-label" for="express-shipping">Express:</label>
-                                    </div><!-- End .custom-control -->
-                                </td>
-                                <td>$20.00</td>
-                            </tr><!-- End .summary-shipping-row -->
-
-                            <tr class="summary-shipping-estimate">
-                                <td>Estimate for Your Country<br> <a href="dashboard.html">Change address</a>
-                                </td>
-                                <td>&nbsp;</td>
-                            </tr><!-- End .summary-shipping-estimate -->
-
                             <tr class="summary-total">
                                 <td>Total:</td>
-                                <td>$160.00</td>
-                            </tr><!-- End .summary-total -->
+                                <td><?php echo number_format($total, 0, ',', '.') ?> VNĐ</td>
+
+                            </tr>
                         </tbody>
                     </table><!-- End .table table-summary -->
-
-                    <a href="checkout.html" class="btn btn-outline-primary-2 btn-order btn-block">PROCEED TO
+                    <?php
+                            $page_checkout = get_page_by_path('thanh-toan');
+                            if ($page_checkout) {
+                                $page_checkout_url = get_permalink($page_checkout->ID);
+                            } else {
+                                $page_checkout_url = "";
+                            } ?>
+                    <a href="<?php echo $page_checkout_url ?>"
+                        class="btn btn-outline-primary-2 btn-order btn-block">PROCEED TO
                         CHECKOUT</a>
                 </div><!-- End .summary -->
 
-                <a href="category.html" class="btn btn-outline-dark-2 btn-block mb-3"><span>CONTINUE
+                <a href="" class="btn btn-outline-dark-2 btn-block mb-3"><span>CONTINUE
                         SHOPPING</span><i class="icon-refresh"></i></a>
             </aside><!-- End .col-lg-3 -->
         </div><!-- End .row -->
@@ -555,3 +521,118 @@ function cart_content()
 
 <?php }
 }
+
+// Shortcode để hiển thị giỏ hàng
+function sc_cart_content_shortcode()
+{
+    ob_start();
+    sc_cart_content();
+    return ob_get_clean();
+}
+add_shortcode('cart_content', 'sc_cart_content_shortcode');
+
+function sc_checkout_content()
+{ ?>
+
+<div class="checkout">
+    <div class="container">
+        <form action="#">
+            <div class="row">
+                <div class="col-lg-9">
+                    <h2 class="checkout-title">Billing Details</h2><!-- End .checkout-title -->
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <label>First Name *</label>
+                            <input type="text" class="form-control" required="">
+                        </div><!-- End .col-sm-6 -->
+
+                        <div class="col-sm-6">
+                            <label>Last Name *</label>
+                            <input type="text" class="form-control" required="">
+                        </div><!-- End .col-sm-6 -->
+                    </div><!-- End .row -->
+
+
+                    <label>Phone *</label>
+                    <input type="tel" class="form-control" required="">
+
+                    <label>Email *</label>
+                    <input type="email" class="form-control" required="">
+
+                    <label>Address *</label>
+                    <input type="text" class="form-control" placeholder="House number and Street name" required="">
+
+                    <label>Order notes (optional)</label>
+                    <textarea class="form-control" cols="30" rows="4"
+                        placeholder="Notes about your order, e.g. special notes for delivery"></textarea>
+                </div><!-- End .col-lg-9 -->
+                <aside class="col-lg-3">
+                    <div class="summary">
+                        <h3 class="summary-title">Your Order</h3><!-- End .summary-title -->
+
+                        <table class="table table-summary">
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <?php
+                                    $total = 0;
+                                    foreach ($_SESSION['cart'] as $product_id => $product_info) {
+                                        $product = get_post($product_id);
+                                        if ($product) {
+                                            if (isset($product_info['options'])) {
+                                                foreach ($product_info['options'] as $size => $colors) {
+                                                    foreach ($colors as $color => $quantity) {
+                                                        $product_price = (int)get_post_meta($product_id, '_product_price', true);
+                                                        $product_colors = get_post_meta($product_id, '_product_colors', true);
+                                                        $discount = (int)get_post_meta($product_id, '_product_discount', true);
+                                                        $discount_price = $product_price * $discount / 100;
+                                                        $product_size = get_term($size, 'size');
+                                                        $total += ($product_price - $discount_price)  * $quantity; ?>
+                                <tr>
+                                    <td><a href="#">Beige knitted elastic runner shoes</a></td>
+                                    <td>$84.00</td>
+                                </tr>
+                                <?php }
+                                                }
+                                            }
+                                        }
+                                    } ?>
+                                <tr class="summary-subtotal">
+                                    <td>Subtotal:</td>
+                                    <td>$160.00</td>
+                                </tr><!-- End .summary-subtotal -->
+                                <tr>
+                                    <td>Shipping:</td>
+                                    <td>Free shipping</td>
+                                </tr>
+                                <tr class="summary-total">
+                                    <td>Total:</td>
+                                    <td>$160.00</td>
+                                </tr><!-- End .summary-total -->
+                            </tbody>
+                        </table><!-- End .table table-summary -->
+
+                        <button type="submit" class="btn btn-outline-primary-2 btn-order btn-block">
+                            <span class="btn-text">Place Order</span>
+                            <span class="btn-hover-text">Proceed to Checkout</span>
+                        </button>
+                    </div><!-- End .summary -->
+                </aside><!-- End .col-lg-3 -->
+            </div><!-- End .row -->
+        </form>
+    </div><!-- End .container -->
+</div>
+<?php }
+// Shortcode để hiển thị giỏ hàng
+function sc_checkout_content_shortcode()
+{
+    ob_start();
+    sc_checkout_content();
+    return ob_get_clean();
+}
+add_shortcode('checkout_content', 'sc_checkout_content_shortcode');
