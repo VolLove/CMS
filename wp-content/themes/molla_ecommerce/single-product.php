@@ -65,7 +65,6 @@
                                     <div class="product-details">
                                         <h1 class="product-title"><?php the_title(); ?></h1>
                                         <!-- End .product-title -->
-
                                         <div class="ratings-container">
                                             <div class="ratings">
                                                 <div class="ratings-val" style="width: 80%;"></div><!-- End .ratings-val -->
