@@ -30,9 +30,9 @@
                                 <ul>
                                     <li>
                                         <?php if (is_user_logged_in()) : ?>
-                                        <a href="<?php echo wp_logout_url(home_url()); ?>">Sign out</a>
+                                            <a href="<?php echo wp_logout_url(home_url()); ?>">Sign out</a>
                                         <?php else : ?>
-                                        <a href="<?php echo wp_login_url(home_url()); ?>">Sign in / Sign up</a>
+                                            <a href="<?php echo wp_login_url(home_url()); ?>">Sign in / Sign up</a>
                                         <?php endif; ?>
                                     </li>
                                 </ul>
@@ -75,7 +75,9 @@
 
                     <div class="header-right">
                         <div class="account">
-                            <a href="<?php echo get_template_directory_uri(); ?>/dashboard.html" title="My account">
+                            <a href="<?php
+                                        $user_id = get_current_user_id();
+                                        echo get_edit_profile_url($user_id); ?>" title="My account">
                                 <div class="icon">
                                     <i class="icon-user"></i>
                                 </div>
@@ -84,7 +86,7 @@
                         </div><!-- End .compare-dropdown -->
 
                         <div class="wishlist">
-                            <a href="<?php echo get_template_directory_uri(); ?>/wishlist.html" title="Wishlist">
+                            <a href="<?php echo get_template_directory_uri(); ?>" title="Wishlist">
                                 <div class="icon">
                                     <i class="icon-heart-o"></i>
                                     <span class="wishlist-count badge">3</span>
@@ -93,7 +95,7 @@
                             </a>
                         </div><!-- End .compare-dropdown -->
 
-                        <div class="dropdown cart-dropdown" id="cart-content">
+                        <div class="dropdown cart-dropdown" id="cart-dropdown-content">
                             <?php display_cart() ?>
                         </div><!-- End .cart-dropdown -->
 
@@ -105,9 +107,8 @@
                 <div class="container">
                     <div class="header-left">
                         <div class="dropdown category-dropdown">
-                            <a href="<?php echo get_template_directory_uri(); ?>/#" class="dropdown-toggle"
-                                role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
-                                data-display="static" title="Browse Categories">
+                            <a href="" class="dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true"
+                                aria-expanded="false" data-display="static" title="Browse Categories">
                                 Browse Categories
                             </a>
                             <div class="dropdown-menu">

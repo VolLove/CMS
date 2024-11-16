@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the WordPress - 6.7.x - Development package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2024-11-13 03:54:56+0000\n"
+"PO-Revision-Date: 2024-11-13 08:30:30+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -1177,6 +1177,12 @@ msgstr "Một số plugin cần thiết bị thiếu hoặc không hoạt độn
 #: wp-includes/class-wp-duotone.php:674
 msgid "\"%1$s\" in %2$s %3$s is not a hex or rgb string."
 msgstr "\"%1$s\" trong %2$s %3$s không phải là chuỗi hex hoặc rgb."
+
+#. translators: 1: pixel value for icon size. 2: pixel value for icon size.
+#: wp-includes/class-wp-customize-manager.php:5214
+#: wp-admin/options-general.php:216
+msgid "The Site Icon is what you see in browser tabs, bookmark bars, and within the WordPress mobile apps. It should be square and at least <code>%1$s by %2$s</code> pixels."
+msgstr "Biểu tượng trang web là những gì bạn thấy trong các tab trình duyệt, thanh đánh dấu và trong các ứng dụng di động WordPress. Nó nên có hình vuông và ít nhất là <code>%1$s x %2$s</code> pixel."
 
 #. translators: %s: Block bindings source name.
 #: wp-includes/class-wp-block-bindings-registry.php:208
