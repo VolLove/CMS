@@ -478,3 +478,85 @@ function sc_handle_order_cancellation()
     }
 }
 add_action('wp', 'sc_handle_order_cancellation');
+
+function get_related_products($category)
+{
+    // Đặt số lượng sản phẩm cần lấy
+    $args = array(
+        'post_type'      => 'product', // Loại bài viết là 'product'
+        'posts_per_page' => 6,         // Lấy 4 sản phẩm
+        'tax_query' => array(
+            array(
+                'taxonomy' => 'product_category',  // Taxonomy là 'product_category'
+                'field'    => 'slug',              // Dùng slug của category
+                'terms'    => $category,      // Lọc theo category slug
+                'operator' => 'IN',
+            ),
+        ),
+    );
+
+    // Thực hiện query
+    $query = new WP_Query($args);
+
+    // Kiểm tra xem có sản phẩm nào không
+    if ($query->have_posts()) {
+        while ($query->have_posts()) {
+            $query->the_post();
+            $product_price = (int)get_post_meta(get_the_ID(), '_product_price', true);
+            $discount = get_post_meta(get_the_ID(), '_product_discount', true); ?>
+<div class="col-6 col-md-4 col-lg-3 col-xl-2">
+    <div class="product product-5 text-center">
+        <figure class="product-media">
+            <?php if (!empty($discount)) { ?>
+            <span class="product-label label-sale">Discount <?php echo $discount ?>%</span>
+            <?php } ?>
+            <?php if (is_recent_product(get_the_ID())) : ?>
+            <span class="product-label label-new">New</span>
+            <?php endif; ?>
+
+            <a href="<?php echo  get_permalink() ?>">
+                <?php echo get_the_post_thumbnail(get_the_ID(), 'thumbnail'); ?>
+            </a>
+
+            <div class="product-action-vertical">
+                <a href="#" class="btn-product-icon btn-wishlist btn-expandable"><span>add to wishlist</span></a>
+            </div><!-- End .product-action-vertical -->
+        </figure><!-- End .product-media -->
+
+        <div class="product-body">
+            <h3 class="product-title"><a href="<?php echo  get_permalink() ?>"><?php echo get_the_title() ?></a></h3>
+            <!-- End .product-title -->
+            <div class="product-price">
+                <?php if (!empty($discount)) { ?>
+                <span class="new-price">
+                    <?php echo number_format($product_price - ($product_price * $discount / 100), 0, '.', ','); ?>
+                    VND
+                </span>
+                <span class="old-price">
+                    <?php echo number_format($product_price, 0, '.', ','); ?> VND
+                </span>
+                <?php } else { ?>
+                <span>
+                    <?php echo number_format($product_price, 0, '.', ','); ?> VND
+                </span>
+                <?php } ?>
+            </div><!-- End .product-price -->
+        </div><!-- End .product-body -->
+        <div class="product-footer">
+            <div class="ratings-container">
+                <div class="ratings">
+                    <div class="ratings-val" style="width: 40%;"></div><!-- End .ratings-val -->
+                </div><!-- End .ratings -->
+                <span class="ratings-text">( 0 Reviews )</span>
+            </div><!-- End .rating-container -->
+        </div><!-- End .product-footer -->
+    </div><!-- End .product -->
+</div>
+<?php }
+    } else {
+        echo 'Không có sản phẩm liên quan.';
+    }
+
+    // Reset lại query
+    wp_reset_postdata();
+}
