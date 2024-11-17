@@ -516,21 +516,6 @@ function sc_update_cart_quantity()
 add_action('wp_ajax_sc_update_cart_quantity', 'sc_update_cart_quantity');
 add_action('wp_ajax_nopriv_sc_update_cart_quantity', 'sc_update_cart_quantity');
 
-// ĐƠN HÀNG | HÓA ĐƠN
-function register_order_post_type()
-{
-    $args = [
-        'public' => false,
-        'show_ui' => true,
-        'label' => 'Đơn hàng',
-        'supports' => ['title', 'editor', 'custom-fields'],
-    ];
-
-    register_post_type('order', $args);
-}
-add_action('init', 'register_order_post_type');
-
-
 
 // Xóa sản phẩm khỏi giỏ hàng
 function sc_remove_from_cart()

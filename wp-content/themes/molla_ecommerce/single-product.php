@@ -278,15 +278,6 @@
                                     comments_template();
                                 }
                                 ?>
-                        <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
-                            <input type="hidden" name="action" value="submit_product_review">
-                            <input type="hidden" name="product_id" value="<?php the_ID(); ?>">
-                            <label for="rating">Rating (1-5):</label>
-                            <input type="number" id="rating" name="rating" min="1" max="5" required>
-                            <textarea name="review" placeholder="Write your review..." required></textarea>
-                            <button type="submit">Submit Review</button>
-                        </form>
-
                     </div><!-- .End .tab-pane -->
                 </div><!-- End .tab-content -->
             </div><!-- End .product-details-tab -->
