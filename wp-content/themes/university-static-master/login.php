@@ -14,10 +14,11 @@ get_header(); ?>
     <div class="container container--narrow page-section">
         <div class="login-form-container">
             <?php
-        wp_login_form();
-        ?>
+            wp_login_form();
+            ?>
         </div>
     </div>
 </div>
+
 
 <?php get_footer(); ?>
