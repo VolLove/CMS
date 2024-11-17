@@ -60,8 +60,8 @@
             <div class="row">
                 <div class="col-sm-12 col-lg-6">
                     <div class="widget widget-about">
-                        <img src="<?php echo get_template_directory_uri(); ?>/assets/images/demos/demo-2/logo.png"
-                            class="footer-logo" alt="Footer Logo" width="105" height="25">
+                        <img src="<?php echo get_template_directory_uri(); ?>/assets/images/logo.png" alt="Molla Logo"
+                            width="105" height="25">
                         <p>Praesent dapibus, neque id cursus ucibus, tortor neque egestas augue, eu vulputate
                             magna eros eu erat. Aliquam erat volutpat. Nam dui mi, tincidunt quis, accumsan
                             porttitor, facilisis luctus, metus. </p>
@@ -70,16 +70,9 @@
                             <div class="row">
                                 <div class="col-sm-6 col-md-4">
                                     <span class="widget-about-title">Got Question? Call us 24/7</span>
-                                    <a href="<?php echo get_template_directory_uri(); ?>/tel:123456789">+0123
+                                    <a>+0123
                                         456
                                         789</a>
-                                </div><!-- End .col-sm-6 -->
-                                <div class="col-sm-6 col-md-8">
-                                    <span class="widget-about-title">Payment Method</span>
-                                    <figure class="footer-payments">
-                                        <img src="<?php echo get_template_directory_uri(); ?>/assets/images/payments.png"
-                                            alt="Payment methods" width="272" height="20">
-                                    </figure><!-- End .footer-payments -->
                                 </div><!-- End .col-sm-6 -->
                             </div><!-- End .row -->
                         </div><!-- End .widget-about-info -->
@@ -90,35 +83,15 @@
                     <div class="widget">
                         <h4 class="widget-title">Information</h4><!-- End .widget-title -->
 
-                        <ul class="widget-list">
-                            <li><a href="<?php echo get_template_directory_uri(); ?>/about.html">About Molla</a>
-                            </li>
-                            <li><a href="<?php echo get_template_directory_uri(); ?>/#">How to shop on Molla</a>
-                            </li>
-                            <li><a href="<?php echo get_template_directory_uri(); ?>/#">FAQ</a></li>
-                            <li><a href="<?php echo get_template_directory_uri(); ?>/contact.html">Contact
-                                    us</a>
-                            </li>
-                            <li><a href="<?php echo get_template_directory_uri(); ?>/login.html">Log in</a></li>
-                        </ul><!-- End .widget-list -->
+                        <?php show_custom_menu('footer-menu-information', 'widget-list', '') ?>
                     </div><!-- End .widget -->
                 </div><!-- End .col-sm-4 col-lg-3 -->
 
                 <div class="col-sm-4 col-lg-2">
                     <div class="widget">
-                        <h4 class="widget-title">Customer Service</h4><!-- End .widget-title -->
 
-                        <ul class="widget-list">
-                            <li><a href="<?php echo get_template_directory_uri(); ?>/#">Payment Methods</a></li>
-                            <li><a href="<?php echo get_template_directory_uri(); ?>/#">Money-back
-                                    guarantee!</a>
-                            </li>
-                            <li><a href="<?php echo get_template_directory_uri(); ?>/#">Returns</a></li>
-                            <li><a href="<?php echo get_template_directory_uri(); ?>/#">Shipping</a></li>
-                            <li><a href="<?php echo get_template_directory_uri(); ?>/#">Terms and conditions</a>
-                            </li>
-                            <li><a href="<?php echo get_template_directory_uri(); ?>/#">Privacy Policy</a></li>
-                        </ul><!-- End .widget-list -->
+                        <h4 class="widget-title">Customer Service</h4><!-- End .widget-title -->
+                        <?php show_custom_menu('footer-menu-service', 'widget-list', '') ?>
                     </div><!-- End .widget -->
                 </div><!-- End .col-sm-4 col-lg-3 -->
 
@@ -126,14 +99,7 @@
                     <div class="widget">
                         <h4 class="widget-title">My Account</h4><!-- End .widget-title -->
 
-                        <ul class="widget-list">
-                            <li><a href="<?php echo get_template_directory_uri(); ?>/#">Sign In</a></li>
-                            <li><a href="<?php echo get_template_directory_uri(); ?>/cart.html">View Cart</a>
-                            </li>
-                            <li><a href="<?php echo get_template_directory_uri(); ?>/#">My Wishlist</a></li>
-                            <li><a href="<?php echo get_template_directory_uri(); ?>/#">Track My Order</a></li>
-                            <li><a href="<?php echo get_template_directory_uri(); ?>/#">Help</a></li>
-                        </ul><!-- End .widget-list -->
+                        <?php show_custom_menu('footer-menu-account', 'widget-list', '') ?>
                     </div><!-- End .widget -->
                 </div><!-- End .col-sm-64 col-lg-3 -->
             </div><!-- End .row -->
@@ -168,319 +134,6 @@
 </div><!-- End .page-wrapper -->
 <button id="scroll-top" title="Back to Top"><i class="icon-arrow-up"></i></button>
 
-<!-- Mobile Menu -->
-<div class="mobile-menu-overlay"></div><!-- End .mobil-menu-overlay -->
-
-<div class="mobile-menu-container mobile-menu-light">
-    <div class="mobile-menu-wrapper">
-        <span class="mobile-menu-close"><i class="icon-close"></i></span>
-
-        <form action="#" method="get" class="mobile-search">
-            <label for="mobile-search" class="sr-only">Search</label>
-            <input type="search" class="form-control" name="mobile-search" id="mobile-search"
-                placeholder="Search product ..." required>
-            <button class="btn btn-primary" type="submit"><i class="icon-search"></i></button>
-        </form>
-
-        <ul class="nav nav-pills-mobile nav-border-anim" role="tablist">
-            <li class="nav-item">
-                <a class="nav-link active" id="mobile-menu-link" data-toggle="tab"
-                    href="<?php echo get_template_directory_uri(); ?>/#mobile-menu-tab" role="tab"
-                    aria-controls="mobile-menu-tab" aria-selected="true">Menu</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" id="mobile-cats-link" data-toggle="tab"
-                    href="<?php echo get_template_directory_uri(); ?>/#mobile-cats-tab" role="tab"
-                    aria-controls="mobile-cats-tab" aria-selected="false">Categories</a>
-            </li>
-        </ul>
-
-        <div class="tab-content">
-            <div class="tab-pane fade show active" id="mobile-menu-tab" role="tabpanel"
-                aria-labelledby="mobile-menu-link">
-                <nav class="mobile-nav">
-                    <ul class="mobile-menu">
-                        <li class="active">
-                            <a href="<?php echo get_template_directory_uri(); ?>/index.html">Home</a>
-
-                            <ul>
-                                <li><a href="<?php echo get_template_directory_uri(); ?>/index-1.html">01 -
-                                        furniture
-                                        store</a></li>
-                                <li><a href="<?php echo get_template_directory_uri(); ?>/index-2.html">02 -
-                                        furniture
-                                        store</a></li>
-                                <li><a href="<?php echo get_template_directory_uri(); ?>/index-3.html">03 -
-                                        electronic store</a></li>
-                                <li><a href="<?php echo get_template_directory_uri(); ?>/index-4.html">04 -
-                                        electronic store</a></li>
-                                <li><a href="<?php echo get_template_directory_uri(); ?>/index-5.html">05 - fashion
-                                        store</a></li>
-                                <li><a href="<?php echo get_template_directory_uri(); ?>/index-6.html">06 - fashion
-                                        store</a></li>
-                                <li><a href="<?php echo get_template_directory_uri(); ?>/index-7.html">07 - fashion
-                                        store</a></li>
-                                <li><a href="<?php echo get_template_directory_uri(); ?>/index-8.html">08 - fashion
-                                        store</a></li>
-                                <li><a href="<?php echo get_template_directory_uri(); ?>/index-9.html">09 - fashion
-                                        store</a></li>
-                                <li><a href="<?php echo get_template_directory_uri(); ?>/index-10.html">10 - shoes
-                                        store</a></li>
-                                <li><a href="<?php echo get_template_directory_uri(); ?>/index-11.html">11 -
-                                        furniture simple store</a></li>
-                                <li><a href="<?php echo get_template_directory_uri(); ?>/index-12.html">12 - fashion
-                                        simple store</a></li>
-                                <li><a href="<?php echo get_template_directory_uri(); ?>/index-13.html">13 -
-                                        market</a></li>
-                                <li><a href="<?php echo get_template_directory_uri(); ?>/index-14.html">14 - market
-                                        fullwidth</a></li>
-                                <li><a href="<?php echo get_template_directory_uri(); ?>/index-15.html">15 -
-                                        lookbook
-                                        1</a></li>
-                                <li><a href="<?php echo get_template_directory_uri(); ?>/index-16.html">16 -
-                                        lookbook
-                                        2</a></li>
-                                <li><a href="<?php echo get_template_directory_uri(); ?>/index-17.html">17 - fashion
-                                        store</a></li>
-                                <li><a href="<?php echo get_template_directory_uri(); ?>/index-18.html">18 - fashion
-                                        store (with sidebar)</a></li>
-                                <li><a href="<?php echo get_template_directory_uri(); ?>/index-19.html">19 - games
-                                        store</a></li>
-                                <li><a href="<?php echo get_template_directory_uri(); ?>/index-20.html">20 - book
-                                        store</a></li>
-                                <li><a href="<?php echo get_template_directory_uri(); ?>/index-21.html">21 - sport
-                                        store</a></li>
-                                <li><a href="<?php echo get_template_directory_uri(); ?>/index-22.html">22 - tools
-                                        store</a></li>
-                                <li><a href="<?php echo get_template_directory_uri(); ?>/index-23.html">23 - fashion
-                                        left navigation store</a></li>
-                                <li><a href="<?php echo get_template_directory_uri(); ?>/index-24.html">24 - extreme
-                                        sport store</a></li>
-                            </ul>
-                        </li>
-                        <li>
-                            <a href="<?php echo get_template_directory_uri(); ?>/category.html">Shop</a>
-                            <ul>
-                                <li><a href="<?php echo get_template_directory_uri(); ?>/category-list.html">Shop
-                                        List</a></li>
-                                <li><a href="<?php echo get_template_directory_uri(); ?>/category-2cols.html">Shop
-                                        Grid 2 Columns</a></li>
-                                <li><a href="<?php echo get_template_directory_uri(); ?>/category.html">Shop Grid 3
-                                        Columns</a></li>
-                                <li><a href="<?php echo get_template_directory_uri(); ?>/category-4cols.html">Shop
-                                        Grid 4 Columns</a></li>
-                                <li><a href="<?php echo get_template_directory_uri(); ?>/category-boxed.html"><span>Shop
-                                            Boxed No Sidebar<span class="tip tip-hot">Hot</span></span></a></li>
-                                <li><a href="<?php echo get_template_directory_uri(); ?>/category-fullwidth.html">Shop
-                                        Fullwidth No Sidebar</a></li>
-                                <li><a href="<?php echo get_template_directory_uri(); ?>/product-category-boxed.html">Product
-                                        Category Boxed</a></li>
-                                <li><a
-                                        href="<?php echo get_template_directory_uri(); ?>/product-category-fullwidth.html"><span>Product
-                                            Category Fullwidth<span class="tip tip-new">New</span></span></a></li>
-                                <li><a href="<?php echo get_template_directory_uri(); ?>/cart.html">Cart</a></li>
-                                <li><a href="<?php echo get_template_directory_uri(); ?>/checkout.html">Checkout</a>
-                                </li>
-                                <li><a href="<?php echo get_template_directory_uri(); ?>/wishlist.html">Wishlist</a>
-                                </li>
-                                <li><a href="<?php echo get_template_directory_uri(); ?>/#">Lookbook</a></li>
-                            </ul>
-                        </li>
-                        <li>
-                            <a href="<?php echo get_template_directory_uri(); ?>/product.html"
-                                class="sf-with-ul">Product</a>
-                            <ul>
-                                <li><a href="<?php echo get_template_directory_uri(); ?>/product.html">Default</a>
-                                </li>
-                                <li><a
-                                        href="<?php echo get_template_directory_uri(); ?>/product-centered.html">Centered</a>
-                                </li>
-                                <li><a href="<?php echo get_template_directory_uri(); ?>/product-extended.html"><span>Extended
-                                            Info<span class="tip tip-new">New</span></span></a></li>
-                                <li><a
-                                        href="<?php echo get_template_directory_uri(); ?>/product-gallery.html">Gallery</a>
-                                </li>
-                                <li><a href="<?php echo get_template_directory_uri(); ?>/product-sticky.html">Sticky
-                                        Info</a></li>
-                                <li><a href="<?php echo get_template_directory_uri(); ?>/product-sidebar.html">Boxed
-                                        With Sidebar</a></li>
-                                <li><a href="<?php echo get_template_directory_uri(); ?>/product-fullwidth.html">Full
-                                        Width</a></li>
-                                <li><a href="<?php echo get_template_directory_uri(); ?>/product-masonry.html">Masonry
-                                        Sticky Info</a></li>
-                            </ul>
-                        </li>
-                        <li>
-                            <a href="<?php echo get_template_directory_uri(); ?>/#">Pages</a>
-                            <ul>
-                                <li>
-                                    <a href="<?php echo get_template_directory_uri(); ?>/about.html">About</a>
-
-                                    <ul>
-                                        <li><a href="<?php echo get_template_directory_uri(); ?>/about.html">About
-                                                01</a></li>
-                                        <li><a href="<?php echo get_template_directory_uri(); ?>/about-2.html">About
-                                                02</a></li>
-                                    </ul>
-                                </li>
-                                <li>
-                                    <a href="<?php echo get_template_directory_uri(); ?>/contact.html">Contact</a>
-
-                                    <ul>
-                                        <li><a href="<?php echo get_template_directory_uri(); ?>/contact.html">Contact
-                                                01</a></li>
-                                        <li><a href="<?php echo get_template_directory_uri(); ?>/contact-2.html">Contact
-                                                02</a></li>
-                                    </ul>
-                                </li>
-                                <li><a href="<?php echo get_template_directory_uri(); ?>/login.html">Login</a></li>
-                                <li><a href="<?php echo get_template_directory_uri(); ?>/faq.html">FAQs</a></li>
-                                <li><a href="<?php echo get_template_directory_uri(); ?>/404.html">Error 404</a>
-                                </li>
-                                <li><a href="<?php echo get_template_directory_uri(); ?>/coming-soon.html">Coming
-                                        Soon</a></li>
-                            </ul>
-                        </li>
-                        <li>
-                            <a href="<?php echo get_template_directory_uri(); ?>/blog.html">Blog</a>
-
-                            <ul>
-                                <li><a href="<?php echo get_template_directory_uri(); ?>/blog.html">Classic</a></li>
-                                <li><a href="<?php echo get_template_directory_uri(); ?>/blog-listing.html">Listing</a>
-                                </li>
-                                <li>
-                                    <a href="<?php echo get_template_directory_uri(); ?>/#">Grid</a>
-                                    <ul>
-                                        <li><a href="<?php echo get_template_directory_uri(); ?>/blog-grid-2cols.html">Grid
-                                                2 columns</a></li>
-                                        <li><a href="<?php echo get_template_directory_uri(); ?>/blog-grid-3cols.html">Grid
-                                                3 columns</a></li>
-                                        <li><a href="<?php echo get_template_directory_uri(); ?>/blog-grid-4cols.html">Grid
-                                                4 columns</a></li>
-                                        <li><a
-                                                href="<?php echo get_template_directory_uri(); ?>/blog-grid-sidebar.html">Grid
-                                                sidebar</a></li>
-                                    </ul>
-                                </li>
-                                <li>
-                                    <a href="<?php echo get_template_directory_uri(); ?>/#">Masonry</a>
-                                    <ul>
-                                        <li><a
-                                                href="<?php echo get_template_directory_uri(); ?>/blog-masonry-2cols.html">Masonry
-                                                2 columns</a></li>
-                                        <li><a
-                                                href="<?php echo get_template_directory_uri(); ?>/blog-masonry-3cols.html">Masonry
-                                                3 columns</a></li>
-                                        <li><a
-                                                href="<?php echo get_template_directory_uri(); ?>/blog-masonry-4cols.html">Masonry
-                                                4 columns</a></li>
-                                        <li><a
-                                                href="<?php echo get_template_directory_uri(); ?>/blog-masonry-sidebar.html">Masonry
-                                                sidebar</a></li>
-                                    </ul>
-                                </li>
-                                <li>
-                                    <a href="<?php echo get_template_directory_uri(); ?>/#">Mask</a>
-                                    <ul>
-                                        <li><a href="<?php echo get_template_directory_uri(); ?>/blog-mask-grid.html">Blog
-                                                mask grid</a></li>
-                                        <li><a
-                                                href="<?php echo get_template_directory_uri(); ?>/blog-mask-masonry.html">Blog
-                                                mask masonry</a></li>
-                                    </ul>
-                                </li>
-                                <li>
-                                    <a href="<?php echo get_template_directory_uri(); ?>/#">Single Post</a>
-                                    <ul>
-                                        <li><a href="<?php echo get_template_directory_uri(); ?>/single.html">Default
-                                                with sidebar</a></li>
-                                        <li><a href="<?php echo get_template_directory_uri(); ?>/single-fullwidth.html">Fullwidth
-                                                no sidebar</a></li>
-                                        <li><a
-                                                href="<?php echo get_template_directory_uri(); ?>/single-fullwidth-sidebar.html">Fullwidth
-                                                with sidebar</a></li>
-                                    </ul>
-                                </li>
-                            </ul>
-                        </li>
-                        <li>
-                            <a href="<?php echo get_template_directory_uri(); ?>/elements-list.html">Elements</a>
-                            <ul>
-                                <li><a
-                                        href="<?php echo get_template_directory_uri(); ?>/elements-products.html">Products</a>
-                                </li>
-                                <li><a
-                                        href="<?php echo get_template_directory_uri(); ?>/elements-typography.html">Typography</a>
-                                </li>
-                                <li><a
-                                        href="<?php echo get_template_directory_uri(); ?>/elements-titles.html">Titles</a>
-                                </li>
-                                <li><a
-                                        href="<?php echo get_template_directory_uri(); ?>/elements-banners.html">Banners</a>
-                                </li>
-                                <li><a
-                                        href="<?php echo get_template_directory_uri(); ?>/elements-product-category.html">Product
-                                        Category</a></li>
-                                <li><a href="<?php echo get_template_directory_uri(); ?>/elements-video-banners.html">Video
-                                        Banners</a></li>
-                                <li><a
-                                        href="<?php echo get_template_directory_uri(); ?>/elements-buttons.html">Buttons</a>
-                                </li>
-                                <li><a
-                                        href="<?php echo get_template_directory_uri(); ?>/elements-accordions.html">Accordions</a>
-                                </li>
-                                <li><a href="<?php echo get_template_directory_uri(); ?>/elements-tabs.html">Tabs</a>
-                                </li>
-                                <li><a
-                                        href="<?php echo get_template_directory_uri(); ?>/elements-testimonials.html">Testimonials</a>
-                                </li>
-                                <li><a href="<?php echo get_template_directory_uri(); ?>/elements-blog-posts.html">Blog
-                                        Posts</a></li>
-                                <li><a
-                                        href="<?php echo get_template_directory_uri(); ?>/elements-portfolio.html">Portfolio</a>
-                                </li>
-                                <li><a href="<?php echo get_template_directory_uri(); ?>/elements-cta.html">Call to
-                                        Action</a></li>
-                                <li><a href="<?php echo get_template_directory_uri(); ?>/elements-icon-boxes.html">Icon
-                                        Boxes</a></li>
-                            </ul>
-                        </li>
-                    </ul>
-                </nav><!-- End .mobile-nav -->
-            </div><!-- .End .tab-pane -->
-            <div class="tab-pane fade" id="mobile-cats-tab" role="tabpanel" aria-labelledby="mobile-cats-link">
-                <nav class="mobile-cats-nav">
-                    <ul class="mobile-cats-menu">
-                        <li><a class="mobile-cats-lead" href="<?php echo get_template_directory_uri(); ?>/#">Daily
-                                offers</a></li>
-                        <li><a class="mobile-cats-lead" href="<?php echo get_template_directory_uri(); ?>/#">Gift
-                                Ideas</a></li>
-                        <li><a href="<?php echo get_template_directory_uri(); ?>/#">Beds</a></li>
-                        <li><a href="<?php echo get_template_directory_uri(); ?>/#">Lighting</a></li>
-                        <li><a href="<?php echo get_template_directory_uri(); ?>/#">Sofas & Sleeper sofas</a></li>
-                        <li><a href="<?php echo get_template_directory_uri(); ?>/#">Storage</a></li>
-                        <li><a href="<?php echo get_template_directory_uri(); ?>/#">Armchairs & Chaises</a></li>
-                        <li><a href="<?php echo get_template_directory_uri(); ?>/#">Decoration </a></li>
-                        <li><a href="<?php echo get_template_directory_uri(); ?>/#">Kitchen Cabinets</a></li>
-                        <li><a href="<?php echo get_template_directory_uri(); ?>/#">Coffee & Tables</a></li>
-                        <li><a href="<?php echo get_template_directory_uri(); ?>/#">Outdoor Furniture </a></li>
-                    </ul><!-- End .mobile-cats-menu -->
-                </nav><!-- End .mobile-cats-nav -->
-            </div><!-- .End .tab-pane -->
-        </div><!-- End .tab-content -->
-
-        <div class="social-icons">
-            <a href="<?php echo get_template_directory_uri(); ?>/#" class="social-icon" target="_blank"
-                title="Facebook"><i class="icon-facebook-f"></i></a>
-            <a href="<?php echo get_template_directory_uri(); ?>/#" class="social-icon" target="_blank"
-                title="Twitter"><i class="icon-twitter"></i></a>
-            <a href="<?php echo get_template_directory_uri(); ?>/#" class="social-icon" target="_blank"
-                title="Instagram"><i class="icon-instagram"></i></a>
-            <a href="<?php echo get_template_directory_uri(); ?>/#" class="social-icon" target="_blank"
-                title="Youtube"><i class="icon-youtube"></i></a>
-        </div><!-- End .social-icons -->
-    </div><!-- End .mobile-menu-wrapper -->
-</div><!-- End .mobile-menu-container -->
 <?php wp_footer(); ?>
 </body>
 <!-- molla/index-1.html  22 Nov 2019 09:55:32 GMT -->

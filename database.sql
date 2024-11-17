@@ -3,7 +3,11 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1:3306
+<<<<<<< HEAD
 -- Thời gian đã tạo: Th10 16, 2024 lúc 09:38 AM
+=======
+-- Thời gian đã tạo: Th10 16, 2024 lúc 09:43 AM
+>>>>>>> viet_Project
 -- Phiên bản máy phục vụ: 8.0.31
 -- Phiên bản PHP: 8.1.13
 

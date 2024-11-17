@@ -43,7 +43,7 @@ function create_product_post_type()
         'public' => true,
         'has_archive' => true,
         'rewrite' => array('slug' => 'san-pham'),
-        'supports' => array('title', 'editor', 'thumbnail', 'excerpt', 'custom-fields'),
+        'supports' => array('title', 'editor', 'thumbnail', 'comments'),
         'menu_position' => 5,
         'menu_icon' => 'dashicons-cart',
     );
@@ -444,11 +444,15 @@ function sc_add_to_cart()
         if (!isset($product_size->name)) {
             wp_send_json_error(['message' => 'Chưa chọn khích thước!.']);
         }
+    } else {
+        $size = '';
     }
     if (!empty($product_colors)) {
         if (!isset($product_colors[$color])) {
             wp_send_json_error(['message' => 'Chưa chọn màu!.']);
         }
+    } else {
+        $color = '';
     }
     if (!empty($product)) {
         // Khởi tạo giỏ hàng nếu chưa có
@@ -484,6 +488,7 @@ function sc_add_to_cart()
 add_action('wp_ajax_sc_add_to_cart', 'sc_add_to_cart');
 add_action('wp_ajax_nopriv_sc_add_to_cart', 'sc_add_to_cart');
 
+//Cập nhật số lượng
 function sc_update_cart_quantity()
 {
 
@@ -510,6 +515,21 @@ function sc_update_cart_quantity()
 }
 add_action('wp_ajax_sc_update_cart_quantity', 'sc_update_cart_quantity');
 add_action('wp_ajax_nopriv_sc_update_cart_quantity', 'sc_update_cart_quantity');
+
+// ĐƠN HÀNG | HÓA ĐƠN
+function register_order_post_type()
+{
+    $args = [
+        'public' => false,
+        'show_ui' => true,
+        'label' => 'Đơn hàng',
+        'supports' => ['title', 'editor', 'custom-fields'],
+    ];
+
+    register_post_type('order', $args);
+}
+add_action('init', 'register_order_post_type');
+
 
 
 // Xóa sản phẩm khỏi giỏ hàng
@@ -570,7 +590,7 @@ add_action('wp_ajax_nopriv_sc_get_cart_content', 'sc_get_cart_content');
 function sc_get_page_cart_content()
 {
     ob_start();
-    sc_cart_content(); // Gọi hàm hiển thị giỏ hàng
+    sc_cart_content();
     $cart_page_html = ob_get_clean();
 
     wp_send_json_success(['cart_page_html' => $cart_page_html]);
@@ -584,3 +604,630 @@ function sc_cart_scripts()
     wp_localize_script('custom-cart-js', 'sc_vars', ['ajax_url' => admin_url('admin-ajax.php')]);
 }
 add_action('wp_enqueue_scripts', 'sc_cart_scripts'); // Shortcode để hiển thị giỏ hàng
+
+
+function sc_cart_content()
+{
+    if (empty($_SESSION['cart'])) {
+    } else { ?>
+
+<div class="cart">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <table class="table table-cart table-mobile">
+                    <thead>
+                        <tr>
+                            <th style="width: 50%;">Product</th>
+                            <th>Price</th>
+                            <th>Quantity</th>
+                            <th>Total</th>
+                            <th style="width: 5%;"></th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <?php
+                                $total = 0;
+                                foreach ($_SESSION['cart'] as $product_id => $product_info) {
+                                    $product = get_post($product_id);
+                                    if ($product) {
+                                        if (isset($product_info['options'])) {
+                                            foreach ($product_info['options'] as $size => $colors) {
+                                                foreach ($colors as $color => $quantity) {
+                                                    $data = 'data-product-id = "' . $product_id . '"';
+                                                    $product_price = (int)get_post_meta($product_id, '_product_price', true);
+                                                    $product_colors = get_post_meta($product_id, '_product_colors', true);
+                                                    $discount = (int)get_post_meta($product_id, '_product_discount', true);
+                                                    $discount_price = $product_price * $discount / 100;
+                                                    $product_size = get_term($size, 'size');
+                                                    $total += ($product_price - $discount_price)  * $quantity;
+                                                    $image_url = get_the_post_thumbnail_url($product_id, 'full'); //không có màu lấy ảnh thumbnail
+                                                    if (isset($product_colors[$color])) {
+                                                        $data = $data . 'data-color="' . $color . '"'; //lấy data color nếu có
+                                                        $image_id = $product_colors[$color]; // Lấy ID ảnh của màu
+                                                        $image_url = wp_get_attachment_url($image_id); // Lấy URL của ảnh
+                                                    } ?>
+                        <tr>
+                            <td class="product-col">
+                                <div class="product">
+                                    <figure class="product-media">
+                                        <a href="#">
+                                            <img src="<?php echo $image_url ?>" alt="Product image">
+                                        </a>
+                                    </figure>
+
+                                    <h3 class="product-title">
+                                        <a href="<?php echo get_permalink($product_id) ?>"><?php echo $product->post_title ?>
+                                            <?php if (isset($product_size->name)) {
+                                                                            $data = $data . 'data-size="' . $size . '"'; ?>
+
+                                            <span class="cart-product-info">| Size:
+                                                <?php echo $product_size->name ?></span>
+                                            <?php } ?>
+                                            <span class="cart-product-info">
+                                                <?php echo $color ? '| Color: ' . $color : '' ?></span>
+                                        </a>
+                                    </h3><!-- End .product-title -->
+                                </div><!-- End .product -->
+                            </td>
+                            <td class="price-col">
+                                <?php if (!empty($discount)) { ?>
+                                <span class="old-price">
+                                    <?php echo number_format($product_price, 0, ',', '.'); ?> VNĐ
+                                </span>
+                                <br>
+                                <span class="new-price">
+                                    <?php echo number_format($f_product_price = $product_price - ($product_price * $discount / 100), 0, ',', '.'); ?>
+                                    VNĐ
+                                </span>
+                                <?php } else { ?>
+                                <span>
+                                    <?php echo number_format($f_product_price = $product_price, 0, '.', '.'); ?>
+                                    VNĐ
+                                </span>
+                                <?php } ?>
+                            </td>
+                            <td class="quantity-col">
+                                <div class="cart-product-quantity">
+                                    <input type="number" class="form-control" id="quantity"
+                                        value="<?php echo $quantity ?>" min="1" step="1" data-decimals="0"
+                                        <?php echo $data; ?> required>
+                                </div><!-- End .cart-product-quantity -->
+                            </td>
+                            <td class="total-col">
+                                <?php
+                                                            $t = $f_product_price * $quantity;
+                                                            echo number_format($t, 0, ',', '.'); ?>
+                                VNĐ</td>
+                            <td class="remove-col"><button <?php echo $data; ?> id="remove-from-cart-btn"
+                                    class="btn-remove"><i class="icon-close"></i></button>
+                            </td>
+                        </tr>
+
+                        <?php }
+                                            }
+                                        }
+                                    }
+                                }
+                                ?>
+
+                    </tbody>
+                </table><!-- End .table table-wishlist -->
+
+                <div class="cart-bottom">
+                    <a href="#" class="btn btn-outline-dark-2" id="clear-cart-btn">
+                        Clear cart
+                    </a>
+                </div><!-- End .cart-bottom -->
+            </div><!-- End .col-lg-9 -->
+            <aside class="col-lg">
+                <div class="summary summary-cart">
+                    <h3 class="summary-title">Cart Total</h3><!-- End .summary-title -->
+
+                    <table class="table table-summary">
+                        <tbody>
+                            <tr class="summary-total">
+                                <td>Total:</td>
+                                <td><?php echo number_format($total, 0, ',', '.') ?> VNĐ</td>
+
+                            </tr>
+                        </tbody>
+                    </table><!-- End .table table-summary -->
+                    <?php
+                            $page_checkout = get_page_by_path('thanh-toan');
+                            if ($page_checkout) {
+                                $page_checkout_url = get_permalink($page_checkout->ID);
+                            } else {
+                                $page_checkout_url = "";
+                            } ?>
+                    <a href="<?php echo $page_checkout_url ?>"
+                        class="btn btn-outline-primary-2 btn-order btn-block">PROCEED TO
+                        CHECKOUT</a>
+                </div><!-- End .summary -->
+
+                <a href="" class="btn btn-outline-dark-2 btn-block mb-3"><span>CONTINUE
+                        SHOPPING</span><i class="icon-refresh"></i></a>
+            </aside><!-- End .col-lg-3 -->
+        </div><!-- End .row -->
+    </div><!-- End .container -->
+</div><!-- End .cart -->
+<?php }
+}
+
+// Shortcode để hiển thị giỏ hàng
+function sc_cart_content_shortcode()
+{
+    ob_start();
+    sc_cart_content();
+    return ob_get_clean();
+}
+add_shortcode('cart_content', 'sc_cart_content_shortcode');
+
+function sc_checkout_content()
+{
+    if (is_user_logged_in()) {
+        if (!empty($_SESSION['cart'])) { ?>
+<div class="checkout">
+    <form id="checkout-form" method="POST">
+        <div class="row">
+            <div class="col-lg-9">
+                <h2 class="checkout-title">Billing Details</h2><!-- End .checkout-title -->
+                <?php
+                            $user_address = get_user_meta(get_current_user_id(), 'user_address', true);
+                            $user_phone = get_user_meta(get_current_user_id(), 'user_phone', true);
+                            $current_user = wp_get_current_user();
+                            ?>
+                <label>Name *</label>
+                <input id="customer_name" name="customer_name" type="text" class="form-control"
+                    value="<?php echo  $current_user->display_name ?>" required>
+
+                <label>Email *</label>
+                <input id="customer_email" value="<?php echo $current_user->user_email ?>" name="customer_email"
+                    type="email" class="form-control" required>
+
+                <label>Phone *</label>
+                <input id="customer_phone" value="<?php echo $user_phone ?>" name="customer_phone" type="phone"
+                    class="form-control" required>
+
+                <label>Address *</label>
+                <input id="customer_address" value="<?php echo $user_address ?>" name="customer_address" type="text"
+                    class="form-control" required>
+
+                <label>Order notes (optional)</label>
+                <textarea id="notes" name="notes" class="form-control" cols="30" rows="4"
+                    placeholder="Notes about your order, e.g. special notes for delivery"></textarea>
+            </div><!-- End .col-lg-9 -->
+            <aside class="col-lg-3">
+                <div class="summary">
+                    <h3 class="summary-title">Your Order</h3><!-- End .summary-title -->
+
+                    <table class="table table-summary">
+                        <thead>
+                            <tr>
+                                <th style="width: 50%;">Product</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <?php
+                                        $total = 0;
+                                        foreach ($_SESSION['cart'] as $product_id => $product_info) {
+                                            $product = get_post($product_id);
+                                            if ($product) {
+                                                if (isset($product_info['options'])) {
+                                                    foreach ($product_info['options'] as $size => $colors) {
+                                                        foreach ($colors as $color => $quantity) {
+                                                            $product_price = (int)get_post_meta($product_id, '_product_price', true);
+                                                            $discount = (int)get_post_meta($product_id, '_product_discount', true);
+                                                            $discount_price = $product_price * $discount / 100;
+                                                            $product_size = get_term($size, 'size');
+                                                            $total += ($product_price - $discount_price)  * $quantity; ?>
+                            <tr>
+                                <td>
+                                    <a href="<?php echo get_permalink($product_id) ?>">
+                                        <?php echo ($color ? $color . ' ' : '') . $product->post_title . (isset($product_size->name) ? ' | Size : ' . $product_size->name : '') ?>
+                                    </a>
+                                </td>
+                                <td>
+                                    <?php echo number_format($product_price - $discount_price, 0, '.', ','); ?>
+                                    VNĐ
+                                </td>
+                            </tr>
+                            <?php }
+                                                    }
+                                                }
+                                            }
+                                        } ?>
+                            <tr class="summary-subtotal">
+                                <td>Subtotal:</td>
+                                <td><?php echo number_format($total, 0, ',', '.') ?> VNĐ</td>
+                            </tr><!-- End .summary-subtotal -->
+                            <tr>
+                                <td>Shipping:</td>
+                                <td>Free shipping</td>
+                            </tr>
+                            <tr class="summary-total">
+                                <td>Total:</td>
+                                <td><?php echo number_format($total, 0, ',', '.') ?> VNĐ</td>
+                            </tr><!-- End .summary-total -->
+                        </tbody>
+                    </table><!-- End .table table-summary -->
+
+                    <button type="submit" class="btn btn-outline-primary-2 btn-order btn-block">
+                        <span class="btn-text">Place Order</span>
+                        <span class="btn-hover-text">Proceed to Checkout</span>
+                    </button>
+                </div><!-- End .summary -->
+            </aside><!-- End .col-lg-3 -->
+        </div><!-- End .row -->
+    </form>
+</div>
+<?php } else {
+            # code...
+        }
+    } else { ?>
+<div class="container" style="text-align: center;">
+    <h1 class="error-title">Login ?</h1><!-- End .error-title -->
+    <p>We are sorry, you must log in to checkout.</p>
+    <a href="<?php echo wp_login_url(home_url()); ?>" class="btn btn-outline-primary-2 btn-minwidth-lg">
+        <span>Go to login</span>
+        <i class="icon-long-arrow-right"></i>
+    </a>
+</div>
+<?php }
+}
+// Shortcode để hiển thị giỏ hàng
+function sc_checkout_content_shortcode()
+{
+    ob_start();
+    sc_checkout_content();
+    return ob_get_clean();
+}
+add_shortcode('checkout_content', 'sc_checkout_content_shortcode');
+
+//Hoa don
+function sc_create_orders_table()
+{
+    global $wpdb;
+
+    // Tên bảng
+    $orders_table = $wpdb->prefix . 'orders';
+    $order_items_table = $wpdb->prefix . 'order_items';
+
+    // Kiểm tra charset
+    $charset_collate = $wpdb->get_charset_collate();
+
+    // SQL tạo bảng orders
+    $sql_orders = "CREATE TABLE $orders_table (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        customer_name VARCHAR(255) NOT NULL,
+        customer_email VARCHAR(255) NOT NULL,
+        customer_phone VARCHAR(255) NOT NULL,
+        customer_address VARCHAR(255) NOT NULL,
+        notes TEXT NULL,
+        status VARCHAR(50) DEFAULT 'pending',
+        total_amount DECIMAL(10,2) NOT NULL,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    ) $charset_collate;";
+
+    // SQL tạo bảng order_items
+    $sql_order_items = "CREATE TABLE $order_items_table (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        order_id INT NOT NULL,
+        product_id INT NOT NULL,
+        product_name VARCHAR(255) NOT NULL,
+        quantity INT NOT NULL,
+        price DECIMAL(10,2) NOT NULL,
+        attributes TEXT,
+        FOREIGN KEY (order_id) REFERENCES $orders_table(id) ON DELETE CASCADE
+    ) $charset_collate;";
+
+    // Tạo bảng
+    require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+    dbDelta($sql_orders);
+    dbDelta($sql_order_items);
+}
+register_activation_hook(__FILE__, 'sc_create_orders_table');
+
+function sc_process_checkout()
+{
+    global $wpdb;
+
+    // Lấy thông tin từ form thanh toán
+    $customer_name = sanitize_text_field($_POST['customer_name']);
+    $customer_email = sanitize_email($_POST['customer_email']);
+    $customer_phone = sanitize_text_field($_POST['customer_phone']);
+    $customer_address = sanitize_text_field($_POST['customer_address']);
+    $notes = sanitize_text_field($_POST['notes']);
+    $cart = isset($_SESSION['cart']) ? $_SESSION['cart'] : [];
+    if (empty($customer_name) || empty($customer_email) || empty($customer_phone) || empty($customer_address)) {
+        wp_send_json_error(['message' => 'Biểu mẫu chưa đủ thông tin.']);
+    }
+    // Kiểm tra giỏ hàng
+    if (empty($cart)) {
+        wp_send_json_error(['message' => 'Giỏ hàng trống.']);
+    }
+
+    // Tính tổng tiền
+    $total_amount = 0;
+    foreach ($cart as $product_id => $details) {
+        foreach ($details['options'] as $size => $colors) {
+            foreach ($colors as $color => $quantity) {
+                $price = get_post_meta($product_id, '_product_price', true);
+                $total_amount += $price * $quantity;
+            }
+        }
+    }
+
+    // Lưu thông tin hóa đơn
+    $wpdb->insert(
+        $wpdb->prefix . 'orders',
+        [
+            'customer_name' => $customer_name,
+            'customer_email' => $customer_email,
+            'customer_phone' => $customer_phone,
+            'customer_address' => $customer_address,
+            'total_amount' => $total_amount,
+            'notes' => $notes,
+        ]
+    );
+    if ($order_id = $wpdb->insert_id) {
+
+        // Lưu sản phẩm đã mua
+        foreach ($cart as $product_id => $details) {
+            foreach ($details['options'] as $size => $colors) {
+                foreach ($colors as $color => $quantity) {
+                    $wpdb->insert(
+                        $wpdb->prefix . 'order_items',
+                        [
+                            'order_id' => $order_id,
+                            'product_id' => $product_id,
+                            'product_name' => get_the_title($product_id),
+                            'quantity' => $quantity,
+                            'price' => get_post_meta($product_id, '_product_price', true),
+                            'attributes' => maybe_serialize(['size' => $size, 'color' => $color]),
+                        ]
+                    );
+                }
+            }
+        }
+
+        // Xóa giỏ hàng sau khi thanh toán thành công
+        unset($_SESSION['cart']);
+
+        // Trả về phản hồi thành công
+        wp_send_json_success(['message' => 'Thanh toán thành công!']);
+    }
+}
+add_action('wp_ajax_sc_process_checkout', 'sc_process_checkout');
+add_action('wp_ajax_nopriv_sc_process_checkout', 'sc_process_checkout');
+function sc_register_admin_menu()
+{
+    add_menu_page(
+        'Quản lý hóa đơn', // Tiêu đề trang
+        'Hóa đơn',         // Tên menu
+        'manage_options',  // Quyền truy cập
+        'sc-orders',       // Slug menu
+        'sc_display_orders_page', // Hàm hiển thị
+        'dashicons-list-view',    // Biểu tượng
+        6
+    );
+}
+add_action('admin_menu', 'sc_register_admin_menu');
+function sc_display_orders_page()
+{
+    if (isset($_GET['order_id'])) {
+        $order_id = intval($_GET['order_id']);
+        sc_display_order_details($order_id);
+        echo '<a href="' . admin_url('admin.php?page=sc-orders') . '">Quay lại danh sách hóa đơn</a>';
+    } else {
+        global $wpdb;
+
+        $orders = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}orders");
+
+        echo '<h1>Danh sách hóa đơn</h1>';
+        echo '<table class="wp-list-table widefat fixed striped">';
+        echo '<thead><tr>
+                <th>ID</th>
+                <th>Tên khách hàng</th>
+                <th>Email</th>
+                <th>Tổng tiền</th>
+                <th>Tình trạng</th>
+                <th>Ngày tạo</th>
+                <th>Hành động</th>
+              </tr></thead><tbody>';
+
+        foreach ($orders as $order) {
+            $details_url = admin_url('admin.php?page=sc-orders&order_id=' . $order->id);
+            switch ($order->status) {
+                case 'processing':
+                    $_s = 'Đang xử lý';
+                    break;
+                case 'completed':
+                    $_s = 'Đã hoàn thành';
+                    break;
+                case 'cancelled':
+                    $_s = 'Đã hủy';
+                    break;
+
+                default:
+                    $_s = 'Chờ xử lý';
+                    break;
+            }
+            echo '<tr>
+                    <td>' . $order->id . '</td>
+                    <td>' . esc_html($order->customer_name) . '</td>
+                    <td>' . esc_html($order->customer_email) . '</td>
+                    <td>' . number_format($order->total_amount, 2) . ' VND</td>
+                    <td>' . esc_html($_s) . '</td>
+                    <td>' . esc_html($order->created_at) . '</td>
+                    <td><a href="' . esc_url($details_url) . '">Xem chi tiết</a></td>
+                  </tr>';
+        }
+
+        echo '</tbody></table>';
+    }
+}
+function sc_display_order_details($order_id)
+{
+    global $wpdb;
+
+    $order = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$wpdb->prefix}orders WHERE id = %d", $order_id));
+
+    echo '<h2>Chi tiết hóa đơn</h2>';
+
+    // Form thay đổi tình trạng
+    echo '<form method="post">';
+    echo '<p><strong>Tình trạng:</strong></p>';
+    echo '<select name="order_status">
+            <option value="pending" ' . selected($order->status, 'pending', false) . '>Chờ xử lý</option>
+            <option value="processing" ' . selected($order->status, 'processing', false) . '>Đang xử lý</option>
+            <option value="completed" ' . selected($order->status, 'completed', false) . '>Đã hoàn thành</option>
+            <option value="cancelled" ' . selected($order->status, 'cancelled', false) . '>Đã hủy</option>
+          </select>';
+    echo '<br><br><input type="submit" name="update_status" value="Cập nhật tình trạng" class="button button-primary"><br><br>';
+    echo '</form>';
+
+    // Cập nhật tình trạng
+    if (isset($_POST['update_status'])) {
+        $new_status = sanitize_text_field($_POST['order_status']);
+        $wpdb->update(
+            "{$wpdb->prefix}orders",
+            ['status' => $new_status],
+            ['id' => $order_id]
+        );
+        echo '<p>Tình trạng hóa đơn đã được cập nhật.</p>';
+    }
+
+    // Hiển thị các sản phẩm trong hóa đơn
+    $order_items = $wpdb->get_results(
+        $wpdb->prepare("SELECT * FROM {$wpdb->prefix}order_items WHERE order_id = %d", $order_id)
+    );
+
+    echo '<table class="wp-list-table widefat fixed striped">';
+    echo '<thead><tr>
+            <th>Sản phẩm</th>
+            <th>Số lượng</th>
+            <th>Giá</th>
+            <th>Thuộc tính</th>
+          </tr></thead><tbody>';
+
+    foreach ($order_items as $item) {
+        $attributes = maybe_unserialize($item->attributes);
+        $attri = '';
+        if (!empty($attributes['size'])) {
+            $product_size = get_term($attributes['size'], 'size');
+            $attri = $attri . ' Kích thước: ' . $product_size->name;
+        }
+
+        if (!empty($attributes['color'])) {
+            $attri = $attri . ' Màu sắc: ' . $attributes['color'];
+        }
+        echo '<tr>
+                <td>' . esc_html($item->product_name) . '</td>
+                <td>' . $item->quantity . '</td>
+                <td>' . number_format($item->price, 2) . ' VND</td>
+                <td>' . esc_html($attri) . '</td>
+              </tr>';
+    }
+
+    echo '</tbody></table>';
+}
+function add_user_address_fields($user)
+{
+    ?>
+<h3>Thông tin địa chỉ</h3>
+<table class="form-table">
+    <tr>
+        <th><label for="user_address">Địa chỉ</label></th>
+        <td>
+            <input type="text" name="user_address" id="user_address"
+                value="<?php echo esc_attr(get_user_meta($user->ID, 'user_address', true)); ?>" class="regular-text" />
+            <p class="description">Nhập địa chỉ của người dùng.</p>
+        </td>
+    </tr>
+</table>
+<?php
+}
+add_action('show_user_profile', 'add_user_address_fields'); // Hồ sơ cá nhân
+add_action('edit_user_profile', 'add_user_address_fields'); // Trang chỉnh sửa người dùng
+function save_user_address_fields($user_id)
+{
+    // Kiểm tra quyền chỉnh sửa người dùng
+    if (!current_user_can('edit_user', $user_id)) {
+        return false;
+    }
+
+    // Lưu địa chỉ vào User Meta
+    if (isset($_POST['user_address'])) {
+        update_user_meta($user_id, 'user_address', sanitize_text_field($_POST['user_address']));
+    }
+}
+add_action('personal_options_update', 'save_user_address_fields'); // Hồ sơ cá nhân
+add_action('edit_user_profile_update', 'save_user_address_fields'); // Trang chỉnh sửa người dùng
+
+function add_user_address_column($columns)
+{
+    $columns['user_address'] = 'Địa chỉ';
+    return $columns;
+}
+add_filter('manage_users_columns', 'add_user_address_column');
+
+function show_user_address_column_content($value, $column_name, $user_id)
+{
+    if ($column_name == 'user_address') {
+        return esc_html(get_user_meta($user_id, 'user_address', true));
+    }
+    return $value;
+}
+add_action('manage_users_custom_column', 'show_user_address_column_content', 10, 3);
+
+function add_user_phone_fields($user)
+{
+?>
+<table class="form-table">
+    <tr>
+        <th><label for="user_phone">Số điện thoại</label></th>
+        <td>
+            <input type="text" name="user_phone" id="user_phone"
+                value="<?php echo esc_attr(get_user_meta($user->ID, 'user_phone', true)); ?>" class="regular-text" />
+            <p class="description">Nhập số điện thoại người dùng.</p>
+        </td>
+    </tr>
+</table>
+<?php
+}
+add_action('show_user_profile', 'add_user_phone_fields'); // Hồ sơ cá nhân
+add_action('edit_user_profile', 'add_user_phone_fields'); // Trang chỉnh sửa người dùng
+
+function save_user_phone_fields($user_id)
+{
+    // Kiểm tra quyền chỉnh sửa người dùng
+    if (!current_user_can('edit_user', $user_id)) {
+        return false;
+    }
+
+    // Lưu SDT vào User Meta
+    if (isset($_POST['user_phone'])) {
+        update_user_meta($user_id, 'user_phone', sanitize_text_field($_POST['user_phone']));
+    }
+}
+add_action('personal_options_update', 'save_user_phone_fields'); // Hồ sơ cá nhân
+add_action('edit_user_profile_update', 'save_user_phone_fields'); // Trang chỉnh sửa người dùng
+function add_user_phone_column($columns)
+{
+    $columns['user_phone'] = 'SDT';
+    return $columns;
+}
+add_filter('manage_users_columns', 'add_user_phone_column');
+
+function show_user_phone_column_content($value, $column_name, $user_id)
+{
+    if ($column_name == 'user_phone') {
+        return esc_html(get_user_meta($user_id, 'user_phone', true));
+    }
+    return $value;
+}
+add_action('manage_users_custom_column', 'show_user_phone_column_content', 10, 3);

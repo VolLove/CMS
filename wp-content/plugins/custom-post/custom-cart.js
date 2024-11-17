@@ -25,6 +25,28 @@ jQuery(document).ready(function ($) {
     );
   });
 
+  $("#checkout-form").on("submit", function (e) {
+    e.preventDefault();
+
+    $.post(
+      sc_vars.ajax_url,
+      {
+        action: "sc_process_checkout",
+        customer_name: $("#customer_name").val(),
+        customer_email: $("#customer_email").val(),
+        customer_phone: $("#customer_phone").val(),
+        customer_address: $("#customer_address").val(),
+        notes: $("#notes").val(),
+      },
+      function (response) {
+        if (response.success) {
+          alert(response.data.message);
+        } else {
+          alert(response.data.message);
+        }
+      }
+    );
+  });
   // Xử lý xóa từng sản phẩm khỏi giỏ hàng
   $(document).on("click", "#remove-from-cart-btn", function (e) {
     e.preventDefault();
