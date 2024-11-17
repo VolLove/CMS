@@ -87,12 +87,12 @@ add_action('init', 'create_product_taxonomy');
 function add_product_category_image_field()
 {
 ?>
-    <div class="form-field">
-        <label for="product_category_thumbnail"><?php _e('Ảnh thumbnail', 'text-domain'); ?></label>
-        <input type="text" name="product_category_thumbnail" id="product_category_thumbnail" value="" style="width: 80%;" />
-        <button class="upload_image_button button"><?php _e('Tải ảnh lên', 'text-domain'); ?></button>
-        <p class="description"><?php _e('Chọn ảnh thumbnail cho loại sản phẩm.', 'text-domain'); ?></p>
-    </div>
+<div class="form-field">
+    <label for="product_category_thumbnail"><?php _e('Ảnh thumbnail', 'text-domain'); ?></label>
+    <input type="text" name="product_category_thumbnail" id="product_category_thumbnail" value="" style="width: 80%;" />
+    <button class="upload_image_button button"><?php _e('Tải ảnh lên', 'text-domain'); ?></button>
+    <p class="description"><?php _e('Chọn ảnh thumbnail cho loại sản phẩm.', 'text-domain'); ?></p>
+</div>
 <?php
 }
 add_action('product_category_add_form_fields', 'add_product_category_image_field');
@@ -111,16 +111,16 @@ function edit_product_category_image_field($term)
 {
     $thumbnail = get_term_meta($term->term_id, 'product_category_thumbnail', true);
 ?>
-    <tr class="form-field">
-        <th scope="row" valign="top"><label
-                for="product_category_thumbnail"><?php _e('Ảnh thumbnail', 'text-domain'); ?></label></th>
-        <td>
-            <input type="text" name="product_category_thumbnail" id="product_category_thumbnail"
-                value="<?php echo esc_attr($thumbnail); ?>" style="width: 80%;" />
-            <button class="upload_image_button button"><?php _e('Tải ảnh lên', 'text-domain'); ?></button>
-            <p class="description"><?php _e('Chọn ảnh thumbnail cho loại sản phẩm.', 'text-domain'); ?></p>
-        </td>
-    </tr>
+<tr class="form-field">
+    <th scope="row" valign="top"><label
+            for="product_category_thumbnail"><?php _e('Ảnh thumbnail', 'text-domain'); ?></label></th>
+    <td>
+        <input type="text" name="product_category_thumbnail" id="product_category_thumbnail"
+            value="<?php echo esc_attr($thumbnail); ?>" style="width: 80%;" />
+        <button class="upload_image_button button"><?php _e('Tải ảnh lên', 'text-domain'); ?></button>
+        <p class="description"><?php _e('Chọn ảnh thumbnail cho loại sản phẩm.', 'text-domain'); ?></p>
+    </td>
+</tr>
 <?php
 }
 add_action('product_category_edit_form_fields', 'edit_product_category_image_field');
@@ -153,9 +153,9 @@ function display_product_price_meta_box($post)
 {
     $product_price = get_post_meta($post->ID, '_product_price', true);
 ?>
-    <label for="product_price">Giá (VNĐ):</label>
-    <input type="number" id="product_price" name="product_price" value="<?php echo esc_attr($product_price); ?>"
-        style="width: 100%;" />
+<label for="product_price">Giá (VNĐ):</label>
+<input type="number" id="product_price" name="product_price" value="<?php echo esc_attr($product_price); ?>"
+    style="width: 100%;" />
 <?php
 }
 
@@ -218,52 +218,52 @@ function display_product_images_meta_box($post)
     $product_images = get_post_meta($post->ID, '_product_images', true);
 ?>
 
-    <div id="product-images-wrapper">
-        <ul id="product-images-list">
-            <?php
+<div id="product-images-wrapper">
+    <ul id="product-images-list">
+        <?php
             if (!empty($product_images)) {
                 foreach ($product_images as $image) {
                     echo '<li><img src="' . esc_url($image) . '" width="100" />';
                     echo '<input type="hidden" name="product_images[]" value="' . esc_url($image) . '">';
                     echo '<button type="button" class="remove-image-button">Xóa</button></li>'; ?>
-            <?php }
+        <?php }
             }
             ?>
-        </ul>
-        <button type="button" id="add-product-image-button">Thêm ảnh</button>
-    </div>
+    </ul>
+    <button type="button" id="add-product-image-button">Thêm ảnh</button>
+</div>
 
-    <script>
-        jQuery(document).ready(function($) {
-            $('#add-product-image-button').click(function() {
-                var frame = wp.media({
-                    title: 'Chọn ảnh sản phẩm',
-                    multiple: true,
-                    button: {
-                        text: 'Thêm ảnh'
-                    }
-                });
+<script>
+jQuery(document).ready(function($) {
+    $('#add-product-image-button').click(function() {
+        var frame = wp.media({
+            title: 'Chọn ảnh sản phẩm',
+            multiple: true,
+            button: {
+                text: 'Thêm ảnh'
+            }
+        });
 
-                frame.on('select', function() {
-                    var images = frame.state().get('selection').toJSON();
-                    images.forEach(function(image) {
-                        $('#product-images-list').append(
-                            '<li><img src="' + image.url + '" width="100" />' +
-                            '<input type="hidden" name="product_images[]" value="' + image
-                            .url + '">' +
-                            '<button type="button" class="remove-image-button">Xóa</button></li>'
-                        );
-                    });
-                });
-
-                frame.open();
-            });
-
-            $('#product-images-list').on('click', '.remove-image-button', function() {
-                $(this).closest('li').remove();
+        frame.on('select', function() {
+            var images = frame.state().get('selection').toJSON();
+            images.forEach(function(image) {
+                $('#product-images-list').append(
+                    '<li><img src="' + image.url + '" width="100" />' +
+                    '<input type="hidden" name="product_images[]" value="' + image
+                    .url + '">' +
+                    '<button type="button" class="remove-image-button">Xóa</button></li>'
+                );
             });
         });
-    </script>
+
+        frame.open();
+    });
+
+    $('#product-images-list').on('click', '.remove-image-button', function() {
+        $(this).closest('li').remove();
+    });
+});
+</script>
 
 <?php
 }
@@ -300,14 +300,14 @@ function display_product_colors_meta_box($post)
 
     wp_nonce_field(basename(__FILE__), 'product_colors_nonce'); ?>
 
-    <table id="product-colors-table" style="width:100%;">
-        <tr>
-            <th>Màu</th>
-            <th>Ảnh</th>
-            <th>Hành động</th>
-        </tr>
+<table id="product-colors-table" style="width:100%;">
+    <tr>
+        <th>Màu</th>
+        <th>Ảnh</th>
+        <th>Hành động</th>
+    </tr>
 
-        <?php if (!empty($product_colors)) {
+    <?php if (!empty($product_colors)) {
             foreach ($product_colors as $color => $image_id) {
                 $image_url = wp_get_attachment_url($image_id);
                 echo '<tr>';
@@ -322,16 +322,16 @@ function display_product_colors_meta_box($post)
             }
         }
         ?>
-    </table>
-    <button type="button" id="add-product-color">Thêm màu</button>
-    <script>
-        jQuery(document).ready(function($) {
-            // Xử lý khi nhấn "Thêm màu"
-            $('#add-product-color').on('click', function(e) {
-                e.preventDefault();
+</table>
+<button type="button" id="add-product-color">Thêm màu</button>
+<script>
+jQuery(document).ready(function($) {
+    // Xử lý khi nhấn "Thêm màu"
+    $('#add-product-color').on('click', function(e) {
+        e.preventDefault();
 
-                // Tạo một hàng mới
-                const newRow = `
+        // Tạo một hàng mới
+        const newRow = `
             <tr>
                 <td><input type="text" name="product_colors[]" placeholder="Nhập màu"></td>
                 <td>
@@ -342,39 +342,39 @@ function display_product_colors_meta_box($post)
                 <td><button type="button" class="remove-color">Xóa</button></td>
             </tr>`;
 
-                // Thêm hàng vào bảng
-                $('#product-colors-table').append(newRow);
-            });
+        // Thêm hàng vào bảng
+        $('#product-colors-table').append(newRow);
+    });
 
-            // Xử lý chọn ảnh từ thư viện phương tiện WordPress
-            $(document).on('click', '.select-color-image', function(e) {
-                e.preventDefault();
-                const button = $(this);
-                const imageInput = button.siblings('input[type="hidden"]');
-                const imagePreview = button.siblings('.color-image-preview');
+    // Xử lý chọn ảnh từ thư viện phương tiện WordPress
+    $(document).on('click', '.select-color-image', function(e) {
+        e.preventDefault();
+        const button = $(this);
+        const imageInput = button.siblings('input[type="hidden"]');
+        const imagePreview = button.siblings('.color-image-preview');
 
-                // Mở thư viện phương tiện
-                const customUploader = wp.media({
-                    title: 'Chọn ảnh cho màu',
-                    button: {
-                        text: 'Chọn ảnh'
-                    },
-                    multiple: false
-                }).on('select', function() {
-                    const attachment = customUploader.state().get('selection').first().toJSON();
-                    imageInput.val(attachment.id); // Lưu ID ảnh vào input ẩn
-                    imagePreview.attr('src', attachment.url).show(); // Hiển thị ảnh đã chọn
-                }).open();
-            });
+        // Mở thư viện phương tiện
+        const customUploader = wp.media({
+            title: 'Chọn ảnh cho màu',
+            button: {
+                text: 'Chọn ảnh'
+            },
+            multiple: false
+        }).on('select', function() {
+            const attachment = customUploader.state().get('selection').first().toJSON();
+            imageInput.val(attachment.id); // Lưu ID ảnh vào input ẩn
+            imagePreview.attr('src', attachment.url).show(); // Hiển thị ảnh đã chọn
+        }).open();
+    });
 
-            // Xử lý xóa hàng màu
-            $(document).on('click', '.remove-color', function(e) {
-                e.preventDefault();
-                $(this).closest('tr').remove();
-            });
-        });
-    </script>
-    <?php  }
+    // Xử lý xóa hàng màu
+    $(document).on('click', '.remove-color', function(e) {
+        e.preventDefault();
+        $(this).closest('tr').remove();
+    });
+});
+</script>
+<?php  }
 // Lưu meta box khi lưu sản phẩm
 function save_product_colors_meta($post_id)
 {
@@ -611,23 +611,23 @@ function sc_cart_content()
     if (empty($_SESSION['cart'])) {
     } else { ?>
 
-        <div class="cart">
-            <div class="container">
-                <div class="row">
-                    <div class="col-lg-12">
-                        <table class="table table-cart table-mobile">
-                            <thead>
-                                <tr>
-                                    <th style="width: 50%;">Product</th>
-                                    <th>Price</th>
-                                    <th>Quantity</th>
-                                    <th>Total</th>
-                                    <th style="width: 5%;"></th>
-                                </tr>
-                            </thead>
+<div class="cart">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <table class="table table-cart table-mobile">
+                    <thead>
+                        <tr>
+                            <th style="width: 50%;">Product</th>
+                            <th>Price</th>
+                            <th>Quantity</th>
+                            <th>Total</th>
+                            <th style="width: 5%;"></th>
+                        </tr>
+                    </thead>
 
-                            <tbody>
-                                <?php
+                    <tbody>
+                        <?php
                                 $total = 0;
                                 foreach ($_SESSION['cart'] as $product_id => $product_info) {
                                     $product = get_post($product_id);
@@ -648,111 +648,111 @@ function sc_cart_content()
                                                         $image_id = $product_colors[$color]; // Lấy ID ảnh của màu
                                                         $image_url = wp_get_attachment_url($image_id); // Lấy URL của ảnh
                                                     } ?>
-                                                    <tr>
-                                                        <td class="product-col">
-                                                            <div class="product">
-                                                                <figure class="product-media">
-                                                                    <a href="#">
-                                                                        <img src="<?php echo $image_url ?>" alt="Product image">
-                                                                    </a>
-                                                                </figure>
+                        <tr>
+                            <td class="product-col">
+                                <div class="product">
+                                    <figure class="product-media">
+                                        <a href="#">
+                                            <img src="<?php echo $image_url ?>" alt="Product image">
+                                        </a>
+                                    </figure>
 
-                                                                <h3 class="product-title">
-                                                                    <a href="<?php echo get_permalink($product_id) ?>"><?php echo $product->post_title ?>
-                                                                        <?php if (isset($product_size->name)) {
+                                    <h3 class="product-title">
+                                        <a href="<?php echo get_permalink($product_id) ?>"><?php echo $product->post_title ?>
+                                            <?php if (isset($product_size->name)) {
                                                                             $data = $data . 'data-size="' . $size . '"'; ?>
 
-                                                                            <span class="cart-product-info">| Size:
-                                                                                <?php echo $product_size->name ?></span>
-                                                                        <?php } ?>
-                                                                        <span class="cart-product-info">
-                                                                            <?php echo $color ? '| Color: ' . $color : '' ?></span>
-                                                                    </a>
-                                                                </h3><!-- End .product-title -->
-                                                            </div><!-- End .product -->
-                                                        </td>
-                                                        <td class="price-col">
-                                                            <?php if (!empty($discount)) { ?>
-                                                                <span class="old-price">
-                                                                    <?php echo number_format($product_price, 0, ',', '.'); ?> VNĐ
-                                                                </span>
-                                                                <br>
-                                                                <span class="new-price">
-                                                                    <?php echo number_format($f_product_price = $product_price - ($product_price * $discount / 100), 0, ',', '.'); ?>
-                                                                    VNĐ
-                                                                </span>
-                                                            <?php } else { ?>
-                                                                <span>
-                                                                    <?php echo number_format($f_product_price = $product_price, 0, '.', '.'); ?>
-                                                                    VNĐ
-                                                                </span>
-                                                            <?php } ?>
-                                                        </td>
-                                                        <td class="quantity-col">
-                                                            <div class="cart-product-quantity">
-                                                                <input type="number" class="form-control" id="quantity"
-                                                                    value="<?php echo $quantity ?>" min="1" step="1" data-decimals="0"
-                                                                    <?php echo $data; ?> required>
-                                                            </div><!-- End .cart-product-quantity -->
-                                                        </td>
-                                                        <td class="total-col">
-                                                            <?php
+                                            <span class="cart-product-info">| Size:
+                                                <?php echo $product_size->name ?></span>
+                                            <?php } ?>
+                                            <span class="cart-product-info">
+                                                <?php echo $color ? '| Color: ' . $color : '' ?></span>
+                                        </a>
+                                    </h3><!-- End .product-title -->
+                                </div><!-- End .product -->
+                            </td>
+                            <td class="price-col">
+                                <?php if (!empty($discount)) { ?>
+                                <span class="old-price">
+                                    <?php echo number_format($product_price, 0, ',', '.'); ?> VNĐ
+                                </span>
+                                <br>
+                                <span class="new-price">
+                                    <?php echo number_format($f_product_price = $product_price - ($product_price * $discount / 100), 0, ',', '.'); ?>
+                                    VNĐ
+                                </span>
+                                <?php } else { ?>
+                                <span>
+                                    <?php echo number_format($f_product_price = $product_price, 0, '.', '.'); ?>
+                                    VNĐ
+                                </span>
+                                <?php } ?>
+                            </td>
+                            <td class="quantity-col">
+                                <div class="cart-product-quantity">
+                                    <input type="number" class="form-control" id="quantity"
+                                        value="<?php echo $quantity ?>" min="1" step="1" data-decimals="0"
+                                        <?php echo $data; ?> required>
+                                </div><!-- End .cart-product-quantity -->
+                            </td>
+                            <td class="total-col">
+                                <?php
                                                             $t = $f_product_price * $quantity;
                                                             echo number_format($t, 0, ',', '.'); ?>
-                                                            VNĐ</td>
-                                                        <td class="remove-col"><button <?php echo $data; ?> id="remove-from-cart-btn"
-                                                                class="btn-remove"><i class="icon-close"></i></button>
-                                                        </td>
-                                                    </tr>
+                                VNĐ</td>
+                            <td class="remove-col"><button <?php echo $data; ?> id="remove-from-cart-btn"
+                                    class="btn-remove"><i class="icon-close"></i></button>
+                            </td>
+                        </tr>
 
-                                <?php }
+                        <?php }
                                             }
                                         }
                                     }
                                 }
                                 ?>
 
-                            </tbody>
-                        </table><!-- End .table table-wishlist -->
+                    </tbody>
+                </table><!-- End .table table-wishlist -->
 
-                        <div class="cart-bottom">
-                            <a href="#" class="btn btn-outline-dark-2" id="clear-cart-btn">
-                                Clear cart
-                            </a>
-                        </div><!-- End .cart-bottom -->
-                    </div><!-- End .col-lg-9 -->
-                    <aside class="col-lg">
-                        <div class="summary summary-cart">
-                            <h3 class="summary-title">Cart Total</h3><!-- End .summary-title -->
+                <div class="cart-bottom">
+                    <a href="#" class="btn btn-outline-dark-2" id="clear-cart-btn">
+                        Clear cart
+                    </a>
+                </div><!-- End .cart-bottom -->
+            </div><!-- End .col-lg-9 -->
+            <aside class="col-lg">
+                <div class="summary summary-cart">
+                    <h3 class="summary-title">Cart Total</h3><!-- End .summary-title -->
 
-                            <table class="table table-summary">
-                                <tbody>
-                                    <tr class="summary-total">
-                                        <td>Total:</td>
-                                        <td><?php echo number_format($total, 0, ',', '.') ?> VNĐ</td>
+                    <table class="table table-summary">
+                        <tbody>
+                            <tr class="summary-total">
+                                <td>Total:</td>
+                                <td><?php echo number_format($total, 0, ',', '.') ?> VNĐ</td>
 
-                                    </tr>
-                                </tbody>
-                            </table><!-- End .table table-summary -->
-                            <?php
+                            </tr>
+                        </tbody>
+                    </table><!-- End .table table-summary -->
+                    <?php
                             $page_checkout = get_page_by_path('thanh-toan');
                             if ($page_checkout) {
                                 $page_checkout_url = get_permalink($page_checkout->ID);
                             } else {
                                 $page_checkout_url = "";
                             } ?>
-                            <a href="<?php echo $page_checkout_url ?>"
-                                class="btn btn-outline-primary-2 btn-order btn-block">PROCEED TO
-                                CHECKOUT</a>
-                        </div><!-- End .summary -->
+                    <a href="<?php echo $page_checkout_url ?>"
+                        class="btn btn-outline-primary-2 btn-order btn-block">PROCEED TO
+                        CHECKOUT</a>
+                </div><!-- End .summary -->
 
-                        <a href="" class="btn btn-outline-dark-2 btn-block mb-3"><span>CONTINUE
-                                SHOPPING</span><i class="icon-refresh"></i></a>
-                    </aside><!-- End .col-lg-3 -->
-                </div><!-- End .row -->
-            </div><!-- End .container -->
-        </div><!-- End .cart -->
-    <?php }
+                <a href="" class="btn btn-outline-dark-2 btn-block mb-3"><span>CONTINUE
+                        SHOPPING</span><i class="icon-refresh"></i></a>
+            </aside><!-- End .col-lg-3 -->
+        </div><!-- End .row -->
+    </div><!-- End .container -->
+</div><!-- End .cart -->
+<?php }
 }
 
 // Shortcode để hiển thị giỏ hàng
@@ -767,41 +767,50 @@ add_shortcode('cart_content', 'sc_cart_content_shortcode');
 function sc_checkout_content()
 {
     if (!empty($_SESSION['cart'])) { ?>
-        <div class="checkout">
-            <form id="checkout-form" method="POST">
-                <div class="row">
-                    <div class="col-lg-9">
-                        <h2 class="checkout-title">Billing Details</h2><!-- End .checkout-title -->
-                        <label>Name *</label>
-                        <input id="customer_name" name="customer_name" type="text" class="form-control" required>
+<div class="checkout">
+    <form id="checkout-form" method="POST">
+        <div class="row">
+            <div class="col-lg-9">
+                <h2 class="checkout-title">Billing Details</h2><!-- End .checkout-title -->
+                <?php
+                        $user_address = get_user_meta(get_current_user_id(), 'user_address', true);
+                        $user_phone = get_user_meta(get_current_user_id(), 'user_phone', true);
+                        $current_user = wp_get_current_user();
+                        ?>
+                <label>Name *</label>
+                <input id="customer_name" name="customer_name" type="text" class="form-control"
+                    value="<?php echo  $current_user->display_name ?>" required>
 
-                        <label>Email *</label>
-                        <input id="customer_email" name="customer_email" type="email" class="form-control" required>
+                <label>Email *</label>
+                <input id="customer_email" value="<?php echo $current_user->user_email ?>" name="customer_email"
+                    type="email" class="form-control" required>
 
-                        <label>Phone *</label>
-                        <input id="customer_phone" name="customer_phone" type="phone" class="form-control" required>
+                <label>Phone *</label>
+                <input id="customer_phone" value="<?php echo $user_phone ?>" name="customer_phone" type="phone"
+                    class="form-control" required>
 
-                        <label>Address *</label>
-                        <input id="customer_address" name="customer_address" type="text" class="form-control" required>
+                <label>Address *</label>
+                <input id="customer_address" value="<?php echo $user_address ?>" name="customer_address" type="text"
+                    class="form-control" required>
 
-                        <label>Order notes (optional)</label>
-                        <textarea id="notes" name="notes" class="form-control" cols="30" rows="4"
-                            placeholder="Notes about your order, e.g. special notes for delivery"></textarea>
-                    </div><!-- End .col-lg-9 -->
-                    <aside class="col-lg-3">
-                        <div class="summary">
-                            <h3 class="summary-title">Your Order</h3><!-- End .summary-title -->
+                <label>Order notes (optional)</label>
+                <textarea id="notes" name="notes" class="form-control" cols="30" rows="4"
+                    placeholder="Notes about your order, e.g. special notes for delivery"></textarea>
+            </div><!-- End .col-lg-9 -->
+            <aside class="col-lg-3">
+                <div class="summary">
+                    <h3 class="summary-title">Your Order</h3><!-- End .summary-title -->
 
-                            <table class="table table-summary">
-                                <thead>
-                                    <tr>
-                                        <th style="width: 50%;">Product</th>
-                                        <th>Total</th>
-                                    </tr>
-                                </thead>
+                    <table class="table table-summary">
+                        <thead>
+                            <tr>
+                                <th style="width: 50%;">Product</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
 
-                                <tbody>
-                                    <?php
+                        <tbody>
+                            <?php
                                     $total = 0;
                                     foreach ($_SESSION['cart'] as $product_id => $product_info) {
                                         $product = get_post($product_id);
@@ -814,46 +823,46 @@ function sc_checkout_content()
                                                         $discount_price = $product_price * $discount / 100;
                                                         $product_size = get_term($size, 'size');
                                                         $total += ($product_price - $discount_price)  * $quantity; ?>
-                                                        <tr>
-                                                            <td>
-                                                                <a href="<?php echo get_permalink($product_id) ?>">
-                                                                    <?php echo ($color ? $color . ' ' : '') . $product->post_title . ($product_size->name ? ' | Size : ' . $product_size->name : '') ?>
-                                                                </a>
-                                                            </td>
-                                                            <td>
-                                                                <?php echo number_format($product_price - $discount_price, 0, '.', ','); ?>
-                                                                VNĐ
-                                                            </td>
-                                                        </tr>
-                                    <?php }
+                            <tr>
+                                <td>
+                                    <a href="<?php echo get_permalink($product_id) ?>">
+                                        <?php echo ($color ? $color . ' ' : '') . $product->post_title . (isset($product_size->name) ? ' | Size : ' . $product_size->name : '') ?>
+                                    </a>
+                                </td>
+                                <td>
+                                    <?php echo number_format($product_price - $discount_price, 0, '.', ','); ?>
+                                    VNĐ
+                                </td>
+                            </tr>
+                            <?php }
                                                 }
                                             }
                                         }
                                     } ?>
-                                    <tr class="summary-subtotal">
-                                        <td>Subtotal:</td>
-                                        <td><?php echo number_format($total, 0, ',', '.') ?> VNĐ</td>
-                                    </tr><!-- End .summary-subtotal -->
-                                    <tr>
-                                        <td>Shipping:</td>
-                                        <td>Free shipping</td>
-                                    </tr>
-                                    <tr class="summary-total">
-                                        <td>Total:</td>
-                                        <td><?php echo number_format($total, 0, ',', '.') ?> VNĐ</td>
-                                    </tr><!-- End .summary-total -->
-                                </tbody>
-                            </table><!-- End .table table-summary -->
+                            <tr class="summary-subtotal">
+                                <td>Subtotal:</td>
+                                <td><?php echo number_format($total, 0, ',', '.') ?> VNĐ</td>
+                            </tr><!-- End .summary-subtotal -->
+                            <tr>
+                                <td>Shipping:</td>
+                                <td>Free shipping</td>
+                            </tr>
+                            <tr class="summary-total">
+                                <td>Total:</td>
+                                <td><?php echo number_format($total, 0, ',', '.') ?> VNĐ</td>
+                            </tr><!-- End .summary-total -->
+                        </tbody>
+                    </table><!-- End .table table-summary -->
 
-                            <button type="submit" class="btn btn-outline-primary-2 btn-order btn-block">
-                                <span class="btn-text">Place Order</span>
-                                <span class="btn-hover-text">Proceed to Checkout</span>
-                            </button>
-                        </div><!-- End .summary -->
-                    </aside><!-- End .col-lg-3 -->
-                </div><!-- End .row -->
-            </form>
-        </div>
+                    <button type="submit" class="btn btn-outline-primary-2 btn-order btn-block">
+                        <span class="btn-text">Place Order</span>
+                        <span class="btn-hover-text">Proceed to Checkout</span>
+                    </button>
+                </div><!-- End .summary -->
+            </aside><!-- End .col-lg-3 -->
+        </div><!-- End .row -->
+    </form>
+</div>
 <?php }
 }
 // Shortcode để hiển thị giỏ hàng
@@ -920,8 +929,8 @@ function sc_process_checkout()
     $customer_address = sanitize_text_field($_POST['customer_address']);
     $notes = sanitize_text_field($_POST['notes']);
     $cart = isset($_SESSION['cart']) ? $_SESSION['cart'] : [];
-    if (empty($customer_address)) {
-        wp_send_json_error(['message' => 'Giỏ hàng trống.']);
+    if (empty($customer_name) || empty($customer_email) || empty($customer_phone) || empty($customer_address)) {
+        wp_send_json_error(['message' => 'Biểu mẫu chưa đủ thông tin.']);
     }
     // Kiểm tra giỏ hàng
     if (empty($cart)) {
@@ -1113,3 +1122,99 @@ function sc_display_order_details($order_id)
 
     echo '</tbody></table>';
 }
+function add_user_address_fields($user)
+{
+    ?>
+<h3>Thông tin địa chỉ</h3>
+<table class="form-table">
+    <tr>
+        <th><label for="user_address">Địa chỉ</label></th>
+        <td>
+            <input type="text" name="user_address" id="user_address"
+                value="<?php echo esc_attr(get_user_meta($user->ID, 'user_address', true)); ?>" class="regular-text" />
+            <p class="description">Nhập địa chỉ của người dùng.</p>
+        </td>
+    </tr>
+</table>
+<?php
+}
+add_action('show_user_profile', 'add_user_address_fields'); // Hồ sơ cá nhân
+add_action('edit_user_profile', 'add_user_address_fields'); // Trang chỉnh sửa người dùng
+function save_user_address_fields($user_id)
+{
+    // Kiểm tra quyền chỉnh sửa người dùng
+    if (!current_user_can('edit_user', $user_id)) {
+        return false;
+    }
+
+    // Lưu địa chỉ vào User Meta
+    if (isset($_POST['user_address'])) {
+        update_user_meta($user_id, 'user_address', sanitize_text_field($_POST['user_address']));
+    }
+}
+add_action('personal_options_update', 'save_user_address_fields'); // Hồ sơ cá nhân
+add_action('edit_user_profile_update', 'save_user_address_fields'); // Trang chỉnh sửa người dùng
+
+function add_user_address_column($columns)
+{
+    $columns['user_address'] = 'Địa chỉ';
+    return $columns;
+}
+add_filter('manage_users_columns', 'add_user_address_column');
+
+function show_user_address_column_content($value, $column_name, $user_id)
+{
+    if ($column_name == 'user_address') {
+        return esc_html(get_user_meta($user_id, 'user_address', true));
+    }
+    return $value;
+}
+add_action('manage_users_custom_column', 'show_user_address_column_content', 10, 3);
+
+function add_user_phone_fields($user)
+{
+?>
+<table class="form-table">
+    <tr>
+        <th><label for="user_phone">Số điện thoại</label></th>
+        <td>
+            <input type="text" name="user_phone" id="user_phone"
+                value="<?php echo esc_attr(get_user_meta($user->ID, 'user_phone', true)); ?>" class="regular-text" />
+            <p class="description">Nhập số điện thoại người dùng.</p>
+        </td>
+    </tr>
+</table>
+<?php
+}
+add_action('show_user_profile', 'add_user_phone_fields'); // Hồ sơ cá nhân
+add_action('edit_user_profile', 'add_user_phone_fields'); // Trang chỉnh sửa người dùng
+
+function save_user_phone_fields($user_id)
+{
+    // Kiểm tra quyền chỉnh sửa người dùng
+    if (!current_user_can('edit_user', $user_id)) {
+        return false;
+    }
+
+    // Lưu SDT vào User Meta
+    if (isset($_POST['user_phone'])) {
+        update_user_meta($user_id, 'user_phone', sanitize_text_field($_POST['user_phone']));
+    }
+}
+add_action('personal_options_update', 'save_user_phone_fields'); // Hồ sơ cá nhân
+add_action('edit_user_profile_update', 'save_user_phone_fields'); // Trang chỉnh sửa người dùng
+function add_user_phone_column($columns)
+{
+    $columns['user_phone'] = 'SDT';
+    return $columns;
+}
+add_filter('manage_users_columns', 'add_user_phone_column');
+
+function show_user_phone_column_content($value, $column_name, $user_id)
+{
+    if ($column_name == 'user_phone') {
+        return esc_html(get_user_meta($user_id, 'user_phone', true));
+    }
+    return $value;
+}
+add_action('manage_users_custom_column', 'show_user_phone_column_content', 10, 3);

@@ -371,4 +371,21 @@ function coutnCart()
         }
         return $totalcount;
     }
-} // Tự động tạo trang khi kích hoạt plugin
+}
+function custom_user_profile_url($rules)
+{
+    $new_rules = array(
+        'profile/([^/]+)/?$' => 'index.php?page_id=307&user=$matches[1]',
+    );
+
+    return $new_rules + $rules;
+}
+add_filter('rewrite_rules_array', 'custom_user_profile_url');
+function is_recent_product($post_id)
+{
+    $post_date = get_the_date('Y-m-d', $post_id); // Lấy ngày đăng của sản phẩm
+    $current_date = date('Y-m-d'); // Ngày hiện tại
+    $date_diff = (strtotime($current_date) - strtotime($post_date)) / (60 * 60 * 24); // Tính số ngày chênh lệch
+
+    return $date_diff <= 7; // Trả về true nếu chênh lệch <= 7 ngày
+}

@@ -30,10 +30,11 @@
                                 <ul>
                                     <li>
                                         <?php if (is_user_logged_in()) : ?>
-                                            <a href="<?php echo wp_logout_url(home_url()); ?>">Sign out</a>
+                                        <a href="<?php echo wp_logout_url(home_url()); ?>">Sign out</a>
                                         <?php else : ?>
-                                            <a href="<?php echo wp_login_url(home_url()); ?>">Sign in / Sign up</a>
+                                        <a href="<?php echo wp_login_url(home_url()); ?>">Sign in / Sign up</a>
                                         <?php endif; ?>
+
                                     </li>
                                 </ul>
                             </li>
@@ -62,11 +63,13 @@
                             class="header-search header-search-extended header-search-visible header-search-no-radius d-none d-lg-block">
                             <a href="<?php echo get_template_directory_uri(); ?>/#" class="search-toggle"
                                 role="button"><i class="icon-search"></i></a>
-                            <form action="#" method="get">
+                            <form action="<?php echo esc_url(get_post_type_archive_link('product')); ?>" method="get">
                                 <div class="header-search-wrapper search-wrapper-wide">
                                     <label for="q" class="sr-only">Search</label>
-                                    <input type="search" class="form-control" name="q" id="q"
-                                        placeholder="Search product ..." required>
+                                    <?php
+                                    $search_query = isset($_GET['q']) ? sanitize_text_field($_GET['q']) : ''; ?>
+                                    <input value="<?php echo $search_query ?>" type="search" class="form-control"
+                                        name="q" id="q" placeholder="Search product ..." required>
                                     <button class="btn btn-primary" type="submit"><i class="icon-search"></i></button>
                                 </div><!-- End .header-search-wrapper -->
                             </form>
@@ -75,9 +78,14 @@
 
                     <div class="header-right">
                         <div class="account">
-                            <a href="<?php
-                                        $user_id = get_current_user_id();
-                                        echo get_edit_profile_url($user_id); ?>" title="My account">
+                            <?php
+                            $page_account = get_page_by_path('account');
+                            if ($page_account) {
+                                $page_account_url = get_permalink($page_account->ID);
+                            } else {
+                                $page_account_url = "";
+                            } ?>
+                            <a href="<?php echo $page_account_url; ?>" title="My account">
                                 <div class="icon">
                                     <i class="icon-user"></i>
                                 </div>
