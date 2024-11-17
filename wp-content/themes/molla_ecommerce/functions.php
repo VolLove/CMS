@@ -141,30 +141,30 @@ function display_top_10_best_selling_products_per_category()
 
     if ($categories && !is_wp_error($categories)) {
         $count = 0; ?>
-<div class="heading heading-center mb-3">
-    <h2 class="title">Top Selling Products</h2><!-- End .title -->
-    <ul class="nav nav-pills nav-border-anim justify-content-center" role="tablist">
-        <?php foreach ($categories as $category) {
+        <div class="heading heading-center mb-3">
+            <h2 class="title">Top Selling Products</h2><!-- End .title -->
+            <ul class="nav nav-pills nav-border-anim justify-content-center" role="tablist">
+                <?php foreach ($categories as $category) {
                     $active_class = ($count === 0) ? 'active' : ''; ?>
-        <li class="nav-item">
-            <a class="nav-link <?php echo $active_class ?>" id="top-<?php echo $count; ?>-link" data-toggle="tab"
-                href="#top-<?php echo $count; ?>-tab" role="tab" aria-controls="top-<?php echo $count; ?>-tab"
-                aria-selected="true"><?php echo esc_html($category->name); ?></a>
-        </li>
-        <?php $count++;
+                    <li class="nav-item">
+                        <a class="nav-link <?php echo $active_class ?>" id="top-<?php echo $count; ?>-link" data-toggle="tab"
+                            href="#top-<?php echo $count; ?>-tab" role="tab" aria-controls="top-<?php echo $count; ?>-tab"
+                            aria-selected="true"><?php echo esc_html($category->name); ?></a>
+                    </li>
+                <?php $count++;
                 } ?>
-    </ul>
-</div><!-- End .heading -->
-<div class="tab-content">
-    <div class="tab-content tab-content-carousel">
-        <?php $count = 0;
+            </ul>
+        </div><!-- End .heading -->
+        <div class="tab-content">
+            <div class="tab-content tab-content-carousel">
+                <?php $count = 0;
                 foreach ($categories as $category) {
                     $active_class = ($count === 0) ? 'active' : ''; ?>
-        <div class="tab-pane p-0 fade show <?php echo $active_class ?>" id="top-<?php echo $count; ?>-tab"
-            role="tabpanel" aria-labelledby="top-<?php echo $count; ?>-link">
-            <div class="owl-carousel owl-simple carousel-equal-height carousel-with-shadow" data-toggle="owl"
-                data-owl-options='{"nav": false,"dots": true,"margin": 20,"loop": false,"responsive": {"0": {"items":2},"480": {"items":2},"768": {"items":3},"992": {"items":4},"1200": {"items":5},"1600": {"items":6,"nav": true}}}'>
-                <?php $args = array(
+                    <div class="tab-pane p-0 fade show <?php echo $active_class ?>" id="top-<?php echo $count; ?>-tab"
+                        role="tabpanel" aria-labelledby="top-<?php echo $count; ?>-link">
+                        <div class="owl-carousel owl-simple carousel-equal-height carousel-with-shadow" data-toggle="owl"
+                            data-owl-options='{"nav": false,"dots": true,"margin": 20,"loop": false,"responsive": {"0": {"items":2},"480": {"items":2},"768": {"items":3},"992": {"items":4},"1200": {"items":5},"1600": {"items":6,"nav": true}}}'>
+                            <?php $args = array(
                                 // Truy vấn 10 sản phẩm bán chạy nhất trong loại sản phẩm này
                                 'post_type' => 'product',
                                 'posts_per_page' => 10, // Thay bằng meta key phù hợp
@@ -180,52 +180,52 @@ function display_top_10_best_selling_products_per_category()
                             );
                             $query = new WP_Query($args);
                             if ($query->have_posts()) { ?>
-                <?php while ($query->have_posts()) {
+                                <?php while ($query->have_posts()) {
                                     $query->the_post();
                                     $product_price = (int)get_post_meta(get_the_ID(), '_product_price', true);
                                 ?>
-                <div class="product product-11 text-center">
-                    <figure class="product-media">
-                        <a href="<?php echo get_permalink() ?>">
-                            <?php if (has_post_thumbnail()) {
+                                    <div class="product product-11 text-center">
+                                        <figure class="product-media">
+                                            <a href="<?php echo get_permalink() ?>">
+                                                <?php if (has_post_thumbnail()) {
                                                     the_post_thumbnail('thumbnail');
                                                 } ?>
-                        </a>
+                                            </a>
 
-                        <div class="product-action-vertical">
-                            <a href="#" class="btn-product-icon btn-wishlist"><span>add to
-                                    wishlist</span></a>
-                        </div><!-- End .product-action-vertical -->
-                    </figure><!-- End .product-media -->
+                                            <div class="product-action-vertical">
+                                                <a href="#" class="btn-product-icon btn-wishlist"><span>add to
+                                                        wishlist</span></a>
+                                            </div><!-- End .product-action-vertical -->
+                                        </figure><!-- End .product-media -->
 
-                    <div class="product-body">
-                        <div class="product-cat">
-                            <a href="#"><?php echo esc_html($category->name); ?></a>
-                        </div>
-                        <h3 class="product-title"><a href="<?php echo get_permalink() ?>"><?php the_title(); ?>r</a>
-                        </h3>
-                        <!-- End .product-title -->
-                        <div class="product-price">
-                            <?php echo number_format($product_price, 0, ',', '.') . ' VNĐ'; ?>
-                        </div><!-- End .product-price -->
-                    </div><!-- End .product-body -->
-                </div><!-- End .product -->
+                                        <div class="product-body">
+                                            <div class="product-cat">
+                                                <a href="#"><?php echo esc_html($category->name); ?></a>
+                                            </div>
+                                            <h3 class="product-title"><a href="<?php echo get_permalink() ?>"><?php the_title(); ?>r</a>
+                                            </h3>
+                                            <!-- End .product-title -->
+                                            <div class="product-price">
+                                                <?php echo number_format($product_price, 0, ',', '.') . ' VNĐ'; ?>
+                                            </div><!-- End .product-price -->
+                                        </div><!-- End .product-body -->
+                                    </div><!-- End .product -->
 
-                <?php } ?>
-                <?php       } else {
+                                <?php } ?>
+                            <?php       } else {
                                 echo $count;
                             }
                             // Reset lại truy vấn
                             wp_reset_postdata(); ?>
-            </div><!-- End .owl-carousel -->
-        </div><!-- .End .tab-pane -->
-        <?php
+                        </div><!-- End .owl-carousel -->
+                    </div><!-- .End .tab-pane -->
+                <?php
                     $count++;
                 } ?>
 
-    </div><!-- End .tab-content -->
-</div><!-- End .tab-content -->
-<?php } else {
+            </div><!-- End .tab-content -->
+        </div><!-- End .tab-content -->
+    <?php } else {
         echo '<p>Không có loại sản phẩm nào.</p>';
     }
 }
@@ -234,26 +234,26 @@ function display_top_10_best_selling_products_per_category()
 function display_cart()
 { ?>
 
-<a class="dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
-    data-display="static">
-    <div class="icon">
-        <i class="icon-shopping-cart"></i>
-        <span class="cart-count"><?php echo coutnCart() ?></span>
-    </div>
-    <p>Cart</p>
-</a>
+    <a class="dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+        data-display="static">
+        <div class="icon">
+            <i class="icon-shopping-cart"></i>
+            <span class="cart-count"><?php echo coutnCart() ?></span>
+        </div>
+        <p>Cart</p>
+    </a>
 
-<?php if (empty($_SESSION['cart'])) { ?>
+    <?php if (empty($_SESSION['cart'])) { ?>
 
-<div class="dropdown-menu dropdown-menu-right ">
-    <div class="dropdown-cart-products">
-        <?php echo "<p>Giỏ hàng trống.</p>"; ?>
-    </div><!-- End .dropdown-cart-total -->
-</div><!-- End .dropdown-menu -->
-<?php } else { ?>
-<div class="dropdown-menu dropdown-menu-right ">
-    <div class="dropdown-cart-products">
-        <?php $total = 0;
+        <div class="dropdown-menu dropdown-menu-right ">
+            <div class="dropdown-cart-products">
+                <?php echo "<p>Giỏ hàng trống.</p>"; ?>
+            </div><!-- End .dropdown-cart-total -->
+        </div><!-- End .dropdown-menu -->
+    <?php } else { ?>
+        <div class="dropdown-menu dropdown-menu-right ">
+            <div class="dropdown-cart-products">
+                <?php $total = 0;
                 foreach ($_SESSION['cart'] as $product_id => $product_info) {
                     $product = get_post($product_id);
                     if ($product) {
@@ -269,53 +269,53 @@ function display_cart()
                                     $product_size = get_term($size, 'size');
                                     $total += ($product_price - $discount_price)  * $quantity;
                 ?>
-        <div class="product">
-            <div class="product-cart-details">
-                <h4 class="product-title">
-                    <span class="cart-product-qty"><?php echo $quantity ?> x </span> <a
-                        href="<?php echo get_permalink($product_id) ?> "><?php echo $product->post_title ?></a>
-                </h4>
-                <span class="cart-product-info">
-                    <?php if (!empty($discount)) { ?>
-                    <span class="old-price">
-                        <?php echo number_format($product_price, 0, '.', ','); ?> VND
-                    </span>
-                    <span class="new-price">
-                        <?php echo number_format($product_price - ($product_price * $discount / 100), 0, '.', ','); ?>
-                        VND
-                    </span>
-                    <?php } else { ?>
-                    <span>
-                        <?php echo number_format($product_price, 0, '.', ','); ?> VND
-                    </span>
-                    <?php } ?>
-                </span><br>
-                <?php if (isset($product_colors[$color])) {
+                                    <div class="product">
+                                        <div class="product-cart-details">
+                                            <h4 class="product-title">
+                                                <span class="cart-product-qty"><?php echo $quantity ?> x </span> <a
+                                                    href="<?php echo get_permalink($product_id) ?> "><?php echo $product->post_title ?></a>
+                                            </h4>
+                                            <span class="cart-product-info">
+                                                <?php if (!empty($discount)) { ?>
+                                                    <span class="old-price">
+                                                        <?php echo number_format($product_price, 0, '.', ','); ?> VND
+                                                    </span>
+                                                    <span class="new-price">
+                                                        <?php echo number_format($product_price - ($product_price * $discount / 100), 0, '.', ','); ?>
+                                                        VND
+                                                    </span>
+                                                <?php } else { ?>
+                                                    <span>
+                                                        <?php echo number_format($product_price, 0, '.', ','); ?> VND
+                                                    </span>
+                                                <?php } ?>
+                                            </span><br>
+                                            <?php if (isset($product_colors[$color])) {
                                                 $data = $data . 'data-color="' . $color . '"'; //lấy data color nếu có
                                                 $image_id = $product_colors[$color]; // Lấy ID ảnh của màu
                                                 $image_url = wp_get_attachment_url($image_id); // Lấy URL của ảnh
                                             ?>
-                <span class="cart-product-info">Color: <?php echo $color ?></span> <br>
-                <?php } else {
+                                                <span class="cart-product-info">Color: <?php echo $color ?></span> <br>
+                                            <?php } else {
                                                 $image_url = get_the_post_thumbnail_url($product_id, 'full'); //không có màu lấy ảnh thumbnail
                                             } ?>
 
-                <?php if (isset($product_size->name)) {
+                                            <?php if (isset($product_size->name)) {
                                                 $data = $data . 'data-size="' . $size . '"'; ?>
 
-                <span class="cart-product-info">Size: <?php echo $product_size->name ?></span>
-                <?php } ?>
-            </div><!-- End .product-cart-details -->
+                                                <span class="cart-product-info">Size: <?php echo $product_size->name ?></span>
+                                            <?php } ?>
+                                        </div><!-- End .product-cart-details -->
 
-            <figure class="product-image-container">
-                <a href="<?php echo get_permalink($product_id) ?> " class="product-image">
-                    <img src="<?php echo $image_url ?>" alt="product">
-                </a>
-            </figure>
-            <button href="#" id="remove-from-cart-btn" class=" btn-remove" <?php echo $data; ?> title="Remove Product">
-                <i class="icon-close"></i></button>
-        </div>
-        <?php
+                                        <figure class="product-image-container">
+                                            <a href="<?php echo get_permalink($product_id) ?> " class="product-image">
+                                                <img src="<?php echo $image_url ?>" alt="product">
+                                            </a>
+                                        </figure>
+                                        <button href="#" id="remove-from-cart-btn" class=" btn-remove" <?php echo $data; ?> title="Remove Product">
+                                            <i class="icon-close"></i></button>
+                                    </div>
+                <?php
                                 }
                             }
                         }
@@ -323,35 +323,35 @@ function display_cart()
                         unset($_SESSION['cart'][$product_id]);
                     }
                 } ?>
-    </div><!-- End .cart-product -->
+            </div><!-- End .cart-product -->
 
-    <div class="dropdown-cart-total">
-        <span>Total</span>
+            <div class="dropdown-cart-total">
+                <span>Total</span>
 
-        <span class="cart-total-price"><?php echo  number_format($total, 0, ',', '.') ?> VND</span>
-    </div><!-- End .dropdown-cart-total -->
+                <span class="cart-total-price"><?php echo  number_format($total, 0, ',', '.') ?> VND</span>
+            </div><!-- End .dropdown-cart-total -->
 
-    <div class="dropdown-cart-action">
-        <?php
+            <div class="dropdown-cart-action">
+                <?php
                 $page_cart = get_page_by_path('gio-hang');
                 if ($page_cart) {
                     $page_cart_url = get_permalink($page_cart->ID);
                 } else {
                     $page_cart_url = "";
                 } ?>
-        <a href="<?php echo $page_cart_url; ?>" class="btn btn-primary">View Cart</a>
-        <?php
+                <a href="<?php echo $page_cart_url; ?>" class="btn btn-primary">View Cart</a>
+                <?php
                 $page_checkout = get_page_by_path('thanh-toan');
                 if ($page_checkout) {
                     $page_checkout_url = get_permalink($page_checkout->ID);
                 } else {
                     $page_checkout_url = "";
                 } ?>
-        <a href="<?php echo $page_checkout_url ?>" class="btn btn-outline-primary-2"><span>Checkout</span><i
-                class="icon-long-arrow-right"></i></a>
-    </div><!-- End .dropdown-cart-total -->
-</div><!-- End .dropdown-menu -->
-<?php }
+                <a href="<?php echo $page_checkout_url ?>" class="btn btn-outline-primary-2"><span>Checkout</span><i
+                        class="icon-long-arrow-right"></i></a>
+            </div><!-- End .dropdown-cart-total -->
+        </div><!-- End .dropdown-menu -->
+        <?php }
 }
 
 function coutnCart()
@@ -389,95 +389,6 @@ function is_recent_product($post_id)
 
     return $date_diff <= 7; // Trả về true nếu chênh lệch <= 7 ngày
 }
-function sc_display_user_orders()
-{
-    global $wpdb;
-    $user_id = get_current_user_id();  // Lấy ID của người dùng hiện tại
-
-    if (!$user_id) {
-        echo 'Bạn cần đăng nhập để xem đơn hàng của mình.';
-        return;
-    }
-
-    // Lấy tất cả đơn hàng của người dùng
-    $orders = $wpdb->get_results($wpdb->prepare(
-        "SELECT * FROM {$wpdb->prefix}orders WHERE customer_email = %s ORDER BY created_at DESC",
-        wp_get_current_user()->user_email
-    ));
-
-    if ($orders) {
-        echo '<h2>Danh sách đơn hàng của bạn</h2>';
-        echo '<table class="wp-list-table widefat fixed striped">';
-        echo '<thead><tr>
-                <th>ID Đơn hàng</th>
-                <th>Tên khách hàng</th>
-                <th>Tổng tiền</th>
-                <th>Trạng thái</th>
-                <th>Ngày tạo</th>
-                <th>Hủy đơn hàng</th>
-              </tr></thead><tbody>';
-
-        foreach ($orders as $order) {
-            echo '<tr>
-                    <td>' . $order->id . '</td>
-                    <td>' . esc_html($order->customer_name) . '</td>
-                    <td>' . number_format($order->total_amount, 2) . ' VND</td>
-                    <td>' . esc_html($order->status) . '</td>
-                    <td>' . esc_html($order->created_at) . '</td>
-                    <td>';
-
-            if ($order->status === 'pending') {
-                echo '<form method="post" action="">
-                        <input type="hidden" name="cancel_order" value="' . $order->id . '">
-                        <input type="submit" value="Hủy đơn hàng" class="button">
-                      </form>';
-            } else {
-                echo 'Không thể hủy';
-            }
-
-            echo '</td>
-                </tr>';
-        }
-
-        echo '</tbody></table>';
-    } else {
-        echo 'Bạn chưa có đơn hàng nào.';
-    }
-}
-function sc_handle_order_cancellation()
-{
-    if (isset($_POST['cancel_order']) && is_user_logged_in()) {
-        global $wpdb;
-
-        $order_id = intval($_POST['cancel_order']);
-        $user_email = wp_get_current_user()->user_email;
-
-        // Kiểm tra xem đơn hàng có thuộc về người dùng không
-        $order = $wpdb->get_row($wpdb->prepare(
-            "SELECT * FROM {$wpdb->prefix}orders WHERE id = %d AND customer_email = %s",
-            $order_id,
-            $user_email
-        ));
-
-        if ($order && $order->status === 'pending') {
-            // Cập nhật trạng thái đơn hàng thành đã hủy
-            $wpdb->update(
-                "{$wpdb->prefix}orders",
-                array('status' => 'cancelled'), // Cập nhật trạng thái
-                array('id' => $order_id),
-                array('%s'),
-                array('%d')
-            );
-
-            // Thông báo hủy thành công
-            echo '<div class="updated"><p>Đơn hàng đã được hủy thành công.</p></div>';
-        } else {
-            // Thông báo nếu đơn hàng không hợp lệ hoặc đã bị hủy
-            echo '<div class="error"><p>Không thể hủy đơn hàng này.</p></div>';
-        }
-    }
-}
-add_action('wp', 'sc_handle_order_cancellation');
 
 function get_related_products($category)
 {
@@ -504,54 +415,54 @@ function get_related_products($category)
             $query->the_post();
             $product_price = (int)get_post_meta(get_the_ID(), '_product_price', true);
             $discount = get_post_meta(get_the_ID(), '_product_discount', true); ?>
-<div class="col-6 col-md-4 col-lg-3 col-xl-2">
-    <div class="product product-5 text-center">
-        <figure class="product-media">
-            <?php if (!empty($discount)) { ?>
-            <span class="product-label label-sale">Discount <?php echo $discount ?>%</span>
-            <?php } ?>
-            <?php if (is_recent_product(get_the_ID())) : ?>
-            <span class="product-label label-new">New</span>
-            <?php endif; ?>
+            <div class="col-6 col-md-4 col-lg-3 col-xl-2">
+                <div class="product product-5 text-center">
+                    <figure class="product-media">
+                        <?php if (!empty($discount)) { ?>
+                            <span class="product-label label-sale">Discount <?php echo $discount ?>%</span>
+                        <?php } ?>
+                        <?php if (is_recent_product(get_the_ID())) : ?>
+                            <span class="product-label label-new">New</span>
+                        <?php endif; ?>
 
-            <a href="<?php echo  get_permalink() ?>">
-                <?php echo get_the_post_thumbnail(get_the_ID(), 'thumbnail'); ?>
-            </a>
+                        <a href="<?php echo  get_permalink() ?>">
+                            <?php echo get_the_post_thumbnail(get_the_ID(), 'thumbnail'); ?>
+                        </a>
 
-            <div class="product-action-vertical">
-                <a href="#" class="btn-product-icon btn-wishlist btn-expandable"><span>add to wishlist</span></a>
-            </div><!-- End .product-action-vertical -->
-        </figure><!-- End .product-media -->
+                        <div class="product-action-vertical">
+                            <a href="#" class="btn-product-icon btn-wishlist btn-expandable"><span>add to wishlist</span></a>
+                        </div><!-- End .product-action-vertical -->
+                    </figure><!-- End .product-media -->
 
-        <div class="product-body">
-            <h3 class="product-title"><a href="<?php echo  get_permalink() ?>"><?php echo get_the_title() ?></a></h3>
-            <!-- End .product-title -->
-            <div class="product-price">
-                <?php if (!empty($discount)) { ?>
-                <span class="new-price">
-                    <?php echo number_format($product_price - ($product_price * $discount / 100), 0, '.', ','); ?>
-                    VND
-                </span>
-                <span class="old-price">
-                    <?php echo number_format($product_price, 0, '.', ','); ?> VND
-                </span>
-                <?php } else { ?>
-                <span>
-                    <?php echo number_format($product_price, 0, '.', ','); ?> VND
-                </span>
-                <?php } ?>
-            </div><!-- End .product-price -->
-        </div><!-- End .product-body -->
-        <div class="product-footer">
-            <div class="ratings-container">
-                <div class="ratings">
-                    <div class="ratings-val" style="width: 40%;"></div><!-- End .ratings-val -->
-                </div><!-- End .ratings -->
-                <span class="ratings-text">( 0 Reviews )</span>
-            </div><!-- End .rating-container -->
-        </div><!-- End .product-footer -->
-    </div><!-- End .product -->
-</div>
+                    <div class="product-body">
+                        <h3 class="product-title"><a href="<?php echo  get_permalink() ?>"><?php echo get_the_title() ?></a></h3>
+                        <!-- End .product-title -->
+                        <div class="product-price">
+                            <?php if (!empty($discount)) { ?>
+                                <span class="new-price">
+                                    <?php echo number_format($product_price - ($product_price * $discount / 100), 0, '.', ','); ?>
+                                    VND
+                                </span>
+                                <span class="old-price">
+                                    <?php echo number_format($product_price, 0, '.', ','); ?> VND
+                                </span>
+                            <?php } else { ?>
+                                <span>
+                                    <?php echo number_format($product_price, 0, '.', ','); ?> VND
+                                </span>
+                            <?php } ?>
+                        </div><!-- End .product-price -->
+                    </div><!-- End .product-body -->
+                    <div class="product-footer">
+                        <div class="ratings-container">
+                            <div class="ratings">
+                                <div class="ratings-val" style="width: 40%;"></div><!-- End .ratings-val -->
+                            </div><!-- End .ratings -->
+                            <span class="ratings-text">( 0 Reviews )</span>
+                        </div><!-- End .rating-container -->
+                    </div><!-- End .product-footer -->
+                </div><!-- End .product -->
+            </div>
 <?php }
     } else {
         echo 'Không có sản phẩm liên quan.';

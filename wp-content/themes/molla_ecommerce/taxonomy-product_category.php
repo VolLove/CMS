@@ -4,10 +4,10 @@ get_header();
 $current_category = get_queried_object();
 
 // Thiết lập các tham số cho truy vấn sản phẩm
-$paged = (get_query_var('page')) ? get_query_var('page') : 1;
+$paged = (get_query_var('page')) ? get_query_var('page') : '';
 $args = array(
     'post_type' => 'product', // Thay bằng post type của bạn
-    'posts_per_page' => 2,  // Số sản phẩm trên mỗi trang
+    'posts_per_page' => 12,  // Số sản phẩm trên mỗi trang
     'paged' => $paged,
     'tax_query' => array(
         array(
@@ -42,22 +42,7 @@ $products = new WP_Query($args); ?>
     <div class="page-content">
         <div class="container">
             <div class="row">
-                <div class="col-lg-9">
-                    <div class="toolbox">
-                        <div class="toolbox-right">
-                            <div class="toolbox-sort">
-                                <label for="sortby">Sort by:</label>
-                                <div class="select-custom">
-                                    <select name="sortby" id="sortby" class="form-control">
-                                        <option value="popularity" selected="selected">Most Popular</option>
-                                        <option value="rating">Most Rated</option>
-                                        <option value="date">Date</option>
-                                    </select>
-                                </div>
-                            </div><!-- End .toolbox-sort -->
-                        </div><!-- End .toolbox-right -->
-                    </div><!-- End .toolbox -->
-
+                <div class="col-lg">
                     <div class="products mb-3">
                         <div class="row">
 
@@ -68,7 +53,7 @@ $products = new WP_Query($args); ?>
                                     $product_price = (int)get_post_meta(get_the_ID(), '_product_price', true); ?>
 
 
-                            <div class="col-6 col-md-4 col-lg-4">
+                            <div class="col-6 col-md-3 col-lg-3">
                                 <div class="product product-7 text-center">
                                     <figure class="product-media">
                                         <?php if (!empty($discount)) { ?>
@@ -151,51 +136,6 @@ $products = new WP_Query($args); ?>
                         </div>
                     </nav>
                 </div><!-- End .col-lg-9 -->
-                <aside class="col-lg-3 order-lg-first">
-                    <div class="sidebar sidebar-shop">
-                        <div class="widget widget-clean">
-                            <label>Filters:</label>
-                            <a href="#" class="sidebar-filter-clear">Clean All</a>
-                        </div><!-- End .widget widget-clean -->
-
-                        <div class="widget widget-collapsible">
-                            <h3 class="widget-title">
-                                <a data-toggle="collapse" href="#widget-1" role="button" aria-expanded="true"
-                                    aria-controls="widget-1">
-                                    Category
-                                </a>
-                            </h3><!-- End .widget-title -->
-
-                            <div class="collapse show" id="widget-1">
-                                <div class="widget-body">
-                                    <div class="filter-items filter-items-count">
-                                        <?php
-                                        $categories = get_terms(['taxonomy' => 'product_category', 'hide_empty' => false]);
-                                        foreach ($categories as $category) :
-                                            $checked = ($current_category->slug == $category->slug) ? 'checked' : '';
-                                        ?>
-                                        <div class="filter-item">
-                                            <div class="custom-control custom-checkbox">
-                                                <input <?php echo $checked; ?> type="checkbox" name="category"
-                                                    value="<?php echo esc_attr($category->slug); ?>"
-                                                    class="custom-control-input"
-                                                    id="cat-<?php echo esc_attr($category->slug); ?>">
-                                                <label class="custom-control-label"
-                                                    for="cat-<?php echo esc_attr($category->slug); ?>"><?php echo esc_html($category->name); ?></label>
-                                            </div><!-- End .custom-checkbox -->
-                                        </div><!-- End .filter-item -->
-                                        <option value="">
-
-                                        </option>
-                                        <?php endforeach; ?>
-
-
-                                    </div><!-- End .filter-items -->
-                                </div><!-- End .widget-body -->
-                            </div><!-- End .collapse -->
-                        </div><!-- End .widget -->
-                    </div><!-- End .sidebar sidebar-shop -->
-                </aside><!-- End .col-lg-3 -->
             </div><!-- End .row -->
         </div><!-- End .container -->
     </div><!-- End .page-content -->

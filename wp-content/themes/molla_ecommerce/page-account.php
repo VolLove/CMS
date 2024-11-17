@@ -54,7 +54,7 @@ get_header(); // Gọi file header.php
 
                             <div class="tab-pane fade" id="tab-orders" role="tabpanel"
                                 aria-labelledby="tab-orders-link">
-                                <?php echo sc_display_user_orders() ?>
+                                <?php echo do_shortcode('[display_user_orders]') ?>
                             </div><!-- .End .tab-pane -->
 
                             <div class="tab-pane fade" id="tab-account" role="tabpanel"

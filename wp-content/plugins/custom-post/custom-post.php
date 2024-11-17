@@ -955,8 +955,10 @@ function sc_process_checkout()
     foreach ($cart as $product_id => $details) {
         foreach ($details['options'] as $size => $colors) {
             foreach ($colors as $color => $quantity) {
-                $price = get_post_meta($product_id, '_product_price', true);
-                $total_amount += $price * $quantity;
+                $product_price = (int)get_post_meta($product_id, '_product_price', true);
+                $discount = (int)get_post_meta($product_id, '_product_discount', true);
+                $discount_price = $product_price * $discount / 100;
+                $total_amount += ($product_price - $discount_price)  * (int)$quantity;
             }
         }
     }
@@ -979,6 +981,10 @@ function sc_process_checkout()
         foreach ($cart as $product_id => $details) {
             foreach ($details['options'] as $size => $colors) {
                 foreach ($colors as $color => $quantity) {
+                    $product_price = (int)get_post_meta($product_id, '_product_price', true);
+                    $discount = (int)get_post_meta($product_id, '_product_discount', true);
+                    $discount_price = $product_price * $discount / 100;
+                    $total = ($product_price - $discount_price)  * (int)$quantity;
                     $wpdb->insert(
                         $wpdb->prefix . 'order_items',
                         [
@@ -986,7 +992,7 @@ function sc_process_checkout()
                             'product_id' => $product_id,
                             'product_name' => get_the_title($product_id),
                             'quantity' => $quantity,
-                            'price' => get_post_meta($product_id, '_product_price', true),
+                            'price' => $total,
                             'attributes' => maybe_serialize(['size' => $size, 'color' => $color]),
                         ]
                     );
@@ -1046,14 +1052,14 @@ function sc_display_orders_page()
                     $_s = 'Đang xử lý';
                     break;
                 case 'completed':
-                    $_s = 'Đã hoàn thành';
+                    $_s = 'Đã nhận';
                     break;
                 case 'cancelled':
                     $_s = 'Đã hủy';
                     break;
 
                 default:
-                    $_s = 'Chờ xử lý';
+                    $_s = 'Chờ xác nhận';
                     break;
             }
             echo '<tr>
@@ -1082,9 +1088,9 @@ function sc_display_order_details($order_id)
     echo '<form method="post">';
     echo '<p><strong>Tình trạng:</strong></p>';
     echo '<select name="order_status">
-            <option value="pending" ' . selected($order->status, 'pending', false) . '>Chờ xử lý</option>
+            <option value="pending" ' . selected($order->status, 'pending', false) . '>Chờ xác nhận</option>
             <option value="processing" ' . selected($order->status, 'processing', false) . '>Đang xử lý</option>
-            <option value="completed" ' . selected($order->status, 'completed', false) . '>Đã hoàn thành</option>
+            <option value="completed" ' . selected($order->status, 'completed', false) . '>Đã nhận</option>
             <option value="cancelled" ' . selected($order->status, 'cancelled', false) . '>Đã hủy</option>
           </select>';
     echo '<br><br><input type="submit" name="update_status" value="Cập nhật tình trạng" class="button button-primary"><br><br>';
@@ -1231,3 +1237,197 @@ function show_user_phone_column_content($value, $column_name, $user_id)
     return $value;
 }
 add_action('manage_users_custom_column', 'show_user_phone_column_content', 10, 3);
+function get_order_items($order_id)
+{
+    global $wpdb;
+
+    // Lấy danh sách sản phẩm từ bảng order_items dựa trên order_id
+    $order_items = $wpdb->get_results(
+        $wpdb->prepare(
+            "SELECT product_id, product_name, quantity, price, attributes 
+            FROM {$wpdb->prefix}order_items 
+            WHERE order_id = %d",
+            $order_id
+        )
+    );
+
+    return $order_items;
+}
+
+function sc_display_user_orders()
+{
+    global $wpdb;
+    $user_id = get_current_user_id();  // Lấy ID của người dùng hiện tại
+
+    if (!$user_id) {
+        echo 'Bạn cần đăng nhập để xem đơn hàng của mình.';
+        return;
+    }
+
+    // Lấy tất cả đơn hàng của người dùng
+    $orders = $wpdb->get_results($wpdb->prepare(
+        "SELECT * FROM {$wpdb->prefix}orders WHERE customer_email = %s ORDER BY created_at DESC",
+        wp_get_current_user()->user_email
+    ));
+
+    if ($orders) { ?>
+<h2 class="title mb-3">Simple Accordions</h2>
+<div class="row">
+    <div class="col-md">
+        <div class="accordion" id="accordion-1">
+            <?php foreach ($orders as $order) {
+                        switch ($order->status) {
+                            case 'processing':
+                                $_s = 'Đang xử lý';
+                                break;
+                            case 'completed':
+                                $_s = 'Đã nhận';
+                                break;
+                            case 'cancelled':
+                                $_s = 'Đã hủy';
+                                break;
+                            default:
+                                $_s = 'Chờ xác nhận';
+                                break;
+                        }
+
+                        $order_items = get_order_items($order->id); ?>
+            <div class="card">
+                <div class="card-header" id="heading-<?php echo $order->id ?>">
+                    <h2 class="card-title">
+                        <a role="button" data-toggle="collapse" href="#collapse-<?php echo $order->id ?>"
+                            aria-expanded="false" aria-controls="collapse-<?php echo $order->id ?>" class="collapsed">
+                            <div class="row justify-content-center align-items-center g-2">
+                                <div class="col">Đơn hàng
+                                </div>
+                                <div class="col">
+                                    <?php echo 'Ngày : ' . get_date_from_gmt($order->created_at, 'd/m/Y') ?></div>
+                                <div class="col"><?php echo number_format($order->total_amount, 0) ?> VND</div>
+                                <div class="col"><?php echo esc_html($_s) ?></div>
+
+                            </div>
+                        </a>
+                    </h2>
+                </div><!-- End .card-header -->
+                <div id="collapse-<?php echo $order->id ?>" class="collapse"
+                    aria-labelledby="heading-<?php echo $order->id ?>" data-parent="#accordion-1" style="">
+                    <div class="card-body">
+                        <table class="table table-wishlist table-mobile">
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Price</th>
+                                    <th>Quantity</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($order_items as $item) {
+                                                $image_url = get_the_post_thumbnail_url($item->product_id, 'full'); ?>
+                                <tr>
+                                    <td class="product-col">
+                                        <div class="product">
+                                            <figure class="product-media">
+                                                <a href="<?php echo get_permalink($item->product_id) ?>">
+                                                    <img src="<?php echo $image_url ?>" alt="">
+                                                </a>
+                                            </figure>
+                                            <h3 class="product-title">
+                                                <a
+                                                    href="<?php echo get_permalink($item->product_id) ?>"><?php echo esc_html($item->product_name) ?></a>
+                                            </h3><!-- End .product-title -->
+                                        </div><!-- End .product -->
+                                    </td>
+                                    <td class="price-col"> <?php echo number_format($item->price, 0) ?> VNĐ</td>
+                                    <td class="price-col"><?php echo $item->quantity ?></td>
+                                    <td class="price-col">
+                                        <?php echo number_format($item->price * $item->quantity, 0) ?> VNĐ
+                                    </td>
+                                </tr>
+                                <?php } ?>
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            <?php if ($order->status === 'pending') { ?>
+                                            <a id="cancel-order-btn" name="cancel-order-btn"
+                                                data-order-id="<?php echo  $order->id ?>" style="color: white;"
+                                                class="btn btn-primary btn-round">Hủy
+                                                đơn hàng</a>
+                                            <?php } ?>
+                                        </th>
+
+                                        <th></th>
+                                        <th>Total</th>
+                                        <th><?php echo number_format($order->total_amount, 0) ?> VND</th>
+                                    </tr>
+                                </thead>
+                            </tbody>
+                        </table>
+                    </div><!-- End .card-body -->
+                </div><!-- End .collapse -->
+            </div><!-- End .card -->
+            <?php } ?>
+        </div><!-- End .accordion -->
+    </div><!-- End .col-md-6 -->
+</div>
+
+<?php    } else {
+        echo 'Bạn chưa có đơn hàng nào.';
+    }
+}
+
+function sc_display_user_orders_shortcode()
+{
+    ob_start();
+    sc_display_user_orders();
+    return ob_get_clean();
+}
+add_shortcode('display_user_orders', 'sc_display_user_orders_shortcode');
+
+// Hàm để lấy lại HTML của giỏ hàng
+function sc_get_order_table_content()
+{
+    ob_start();
+    sc_display_user_orders(); // Gọi hàm hiển thị giỏ hàng
+    $order_table_html = ob_get_clean();
+
+    wp_send_json_success(['order_table_html' => $order_table_html]);
+}
+add_action('wp_ajax_sc_get_order_table_content', 'sc_get_order_table_content');
+add_action('wp_ajax_nopriv_sc_get_order_table_content', 'sc_get_order_table_content');
+function sc_handle_order_cancellation()
+{
+    if (is_user_logged_in()) {
+        global $wpdb;
+
+        $order_id = intval($_POST['order_id']);
+        $user_email = wp_get_current_user()->user_email;
+
+        // Kiểm tra xem đơn hàng có thuộc về người dùng không
+        $order = $wpdb->get_row($wpdb->prepare(
+            "SELECT * FROM {$wpdb->prefix}orders WHERE id = %d AND customer_email = %s",
+            $order_id,
+            $user_email
+        ));
+
+        if ($order && $order->status === 'pending') {
+            // Cập nhật trạng thái đơn hàng thành đã hủy
+            $wpdb->update(
+                "{$wpdb->prefix}orders",
+                array('status' => 'cancelled'), // Cập nhật trạng thái
+                array('id' => $order_id),
+                array('%s'),
+                array('%d')
+            );
+
+            // Thông báo hủy thành công
+            wp_send_json_success();
+        } else {
+            // Thông báo nếu đơn hàng không hợp lệ hoặc đã bị hủy
+            wp_send_json_error(['message' => 'Đơn hàng không hợp lệ.']);
+        }
+    }
+}
+
+add_action('wp_ajax_sc_handle_order_cancellation', 'sc_handle_order_cancellation');
+add_action('wp_ajax_nopriv_sc_handle_order_cancellation', 'sc_handle_order_cancellation');
