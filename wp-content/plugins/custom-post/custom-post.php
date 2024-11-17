@@ -766,17 +766,18 @@ add_shortcode('cart_content', 'sc_cart_content_shortcode');
 
 function sc_checkout_content()
 {
-    if (!empty($_SESSION['cart'])) { ?>
+    if (is_user_logged_in()) {
+        if (!empty($_SESSION['cart'])) { ?>
 <div class="checkout">
     <form id="checkout-form" method="POST">
         <div class="row">
             <div class="col-lg-9">
                 <h2 class="checkout-title">Billing Details</h2><!-- End .checkout-title -->
                 <?php
-                        $user_address = get_user_meta(get_current_user_id(), 'user_address', true);
-                        $user_phone = get_user_meta(get_current_user_id(), 'user_phone', true);
-                        $current_user = wp_get_current_user();
-                        ?>
+                            $user_address = get_user_meta(get_current_user_id(), 'user_address', true);
+                            $user_phone = get_user_meta(get_current_user_id(), 'user_phone', true);
+                            $current_user = wp_get_current_user();
+                            ?>
                 <label>Name *</label>
                 <input id="customer_name" name="customer_name" type="text" class="form-control"
                     value="<?php echo  $current_user->display_name ?>" required>
@@ -811,18 +812,18 @@ function sc_checkout_content()
 
                         <tbody>
                             <?php
-                                    $total = 0;
-                                    foreach ($_SESSION['cart'] as $product_id => $product_info) {
-                                        $product = get_post($product_id);
-                                        if ($product) {
-                                            if (isset($product_info['options'])) {
-                                                foreach ($product_info['options'] as $size => $colors) {
-                                                    foreach ($colors as $color => $quantity) {
-                                                        $product_price = (int)get_post_meta($product_id, '_product_price', true);
-                                                        $discount = (int)get_post_meta($product_id, '_product_discount', true);
-                                                        $discount_price = $product_price * $discount / 100;
-                                                        $product_size = get_term($size, 'size');
-                                                        $total += ($product_price - $discount_price)  * $quantity; ?>
+                                        $total = 0;
+                                        foreach ($_SESSION['cart'] as $product_id => $product_info) {
+                                            $product = get_post($product_id);
+                                            if ($product) {
+                                                if (isset($product_info['options'])) {
+                                                    foreach ($product_info['options'] as $size => $colors) {
+                                                        foreach ($colors as $color => $quantity) {
+                                                            $product_price = (int)get_post_meta($product_id, '_product_price', true);
+                                                            $discount = (int)get_post_meta($product_id, '_product_discount', true);
+                                                            $discount_price = $product_price * $discount / 100;
+                                                            $product_size = get_term($size, 'size');
+                                                            $total += ($product_price - $discount_price)  * $quantity; ?>
                             <tr>
                                 <td>
                                     <a href="<?php echo get_permalink($product_id) ?>">
@@ -835,10 +836,10 @@ function sc_checkout_content()
                                 </td>
                             </tr>
                             <?php }
+                                                    }
                                                 }
                                             }
-                                        }
-                                    } ?>
+                                        } ?>
                             <tr class="summary-subtotal">
                                 <td>Subtotal:</td>
                                 <td><?php echo number_format($total, 0, ',', '.') ?> VNĐ</td>
@@ -862,6 +863,18 @@ function sc_checkout_content()
             </aside><!-- End .col-lg-3 -->
         </div><!-- End .row -->
     </form>
+</div>
+<?php } else {
+            # code...
+        }
+    } else { ?>
+<div class="container" style="text-align: center;">
+    <h1 class="error-title">Login ?</h1><!-- End .error-title -->
+    <p>We are sorry, you must log in to checkout.</p>
+    <a href="<?php echo wp_login_url(home_url()); ?>" class="btn btn-outline-primary-2 btn-minwidth-lg">
+        <span>Go to login</span>
+        <i class="icon-long-arrow-right"></i>
+    </a>
 </div>
 <?php }
 }

@@ -389,3 +389,92 @@ function is_recent_product($post_id)
 
     return $date_diff <= 7; // Trả về true nếu chênh lệch <= 7 ngày
 }
+function sc_display_user_orders()
+{
+    global $wpdb;
+    $user_id = get_current_user_id();  // Lấy ID của người dùng hiện tại
+
+    if (!$user_id) {
+        echo 'Bạn cần đăng nhập để xem đơn hàng của mình.';
+        return;
+    }
+
+    // Lấy tất cả đơn hàng của người dùng
+    $orders = $wpdb->get_results($wpdb->prepare(
+        "SELECT * FROM {$wpdb->prefix}orders WHERE customer_email = %s ORDER BY created_at DESC",
+        wp_get_current_user()->user_email
+    ));
+
+    if ($orders) {
+        echo '<h2>Danh sách đơn hàng của bạn</h2>';
+        echo '<table class="wp-list-table widefat fixed striped">';
+        echo '<thead><tr>
+                <th>ID Đơn hàng</th>
+                <th>Tên khách hàng</th>
+                <th>Tổng tiền</th>
+                <th>Trạng thái</th>
+                <th>Ngày tạo</th>
+                <th>Hủy đơn hàng</th>
+              </tr></thead><tbody>';
+
+        foreach ($orders as $order) {
+            echo '<tr>
+                    <td>' . $order->id . '</td>
+                    <td>' . esc_html($order->customer_name) . '</td>
+                    <td>' . number_format($order->total_amount, 2) . ' VND</td>
+                    <td>' . esc_html($order->status) . '</td>
+                    <td>' . esc_html($order->created_at) . '</td>
+                    <td>';
+
+            if ($order->status === 'pending') {
+                echo '<form method="post" action="">
+                        <input type="hidden" name="cancel_order" value="' . $order->id . '">
+                        <input type="submit" value="Hủy đơn hàng" class="button">
+                      </form>';
+            } else {
+                echo 'Không thể hủy';
+            }
+
+            echo '</td>
+                </tr>';
+        }
+
+        echo '</tbody></table>';
+    } else {
+        echo 'Bạn chưa có đơn hàng nào.';
+    }
+}
+function sc_handle_order_cancellation()
+{
+    if (isset($_POST['cancel_order']) && is_user_logged_in()) {
+        global $wpdb;
+
+        $order_id = intval($_POST['cancel_order']);
+        $user_email = wp_get_current_user()->user_email;
+
+        // Kiểm tra xem đơn hàng có thuộc về người dùng không
+        $order = $wpdb->get_row($wpdb->prepare(
+            "SELECT * FROM {$wpdb->prefix}orders WHERE id = %d AND customer_email = %s",
+            $order_id,
+            $user_email
+        ));
+
+        if ($order && $order->status === 'pending') {
+            // Cập nhật trạng thái đơn hàng thành đã hủy
+            $wpdb->update(
+                "{$wpdb->prefix}orders",
+                array('status' => 'cancelled'), // Cập nhật trạng thái
+                array('id' => $order_id),
+                array('%s'),
+                array('%d')
+            );
+
+            // Thông báo hủy thành công
+            echo '<div class="updated"><p>Đơn hàng đã được hủy thành công.</p></div>';
+        } else {
+            // Thông báo nếu đơn hàng không hợp lệ hoặc đã bị hủy
+            echo '<div class="error"><p>Không thể hủy đơn hàng này.</p></div>';
+        }
+    }
+}
+add_action('wp', 'sc_handle_order_cancellation');

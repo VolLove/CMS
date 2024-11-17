@@ -77,14 +77,12 @@
                     </div>
 
                     <div class="header-right">
-                        <div class="account">
-                            <?php
+                        <?php if (is_user_logged_in()) : ?>
+                        <?php
                             $page_account = get_page_by_path('account');
-                            if ($page_account) {
-                                $page_account_url = get_permalink($page_account->ID);
-                            } else {
-                                $page_account_url = "";
-                            } ?>
+                            if ($page_account) :
+                                $page_account_url = get_permalink($page_account->ID); ?>
+                        <div class="account">
                             <a href="<?php echo $page_account_url; ?>" title="My account">
                                 <div class="icon">
                                     <i class="icon-user"></i>
@@ -102,6 +100,8 @@
                                 <p>Wishlist</p>
                             </a>
                         </div><!-- End .compare-dropdown -->
+                        <?php endif;
+                        endif; ?>
 
                         <div class="dropdown cart-dropdown" id="cart-dropdown-content">
                             <?php display_cart() ?>
