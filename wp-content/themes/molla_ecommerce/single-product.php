@@ -287,7 +287,6 @@
             <div class="row">
                 <?php
                         $category_slugs = wp_list_pluck($product_categories, 'slug');
-
                         echo get_related_products($category_slugs) ?>
             </div>
         </div><!-- End .container -->

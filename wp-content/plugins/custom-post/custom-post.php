@@ -1289,7 +1289,6 @@ function sc_display_user_orders()
                                     <?php echo 'Ngày : ' . get_date_from_gmt($order->created_at, 'd/m/Y') ?></div>
                                 <div class="col"><?php echo number_format($order->total_amount, 0) ?> VND</div>
                                 <div class="col"><?php echo esc_html($_s) ?></div>
-
                             </div>
                         </a>
                     </h2>

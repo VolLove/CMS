@@ -92,7 +92,7 @@
                         </div><!-- End .compare-dropdown -->
 
                         <div class="wishlist">
-                            <a href="<?php echo get_template_directory_uri(); ?>" title="Wishlist">
+                            <a href="" title="Wishlist">
                                 <div class="icon">
                                     <i class="icon-heart-o"></i>
                                     <span class="wishlist-count badge">3</span>
